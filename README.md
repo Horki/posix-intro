@@ -6,7 +6,8 @@
 ```console
 $ kill -TERM $(pgrep gedit)
 ```
-# | Name | Description
+
+- | Name | Description
 --- | --- | ---
 1 | HUP  | Hangup. The controlling term (tty or pty)has exited
 2 | INT  | Interrupt. Ctrl-C.
