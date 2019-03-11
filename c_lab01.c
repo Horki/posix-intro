@@ -6,9 +6,9 @@
 #include <errno.h> // errno
 #include <string.h> // strerror
 
-void error_msg(const char*);
-void execute_child(pid_t);
-void wait_child(pid_t);
+static void error_msg(const char*);
+static void execute_child(pid_t);
+static void wait_child(pid_t);
 
 int main() {
   pid_t pid = fork();
@@ -28,14 +28,14 @@ int main() {
   return EXIT_SUCCESS;
 }
 
-void execute_child(pid_t ppid) {
+static void execute_child(pid_t ppid) {
   if (ppid) error_msg("Not a child process!");
   printf("Waiting to close child process (gedit[pid=%d])\n", getpid());
   if (execl("/usr/bin/gedit", "gedit", NULL) != -1)
     error_msg("Can't open gedit");
 }
 
-void wait_child(pid_t pid) {
+static void wait_child(pid_t pid) {
   if (!pid) error_msg("Not a parent process!");
   int pid_status;
   if (waitpid(pid, &pid_status, 0) == -1)
@@ -44,7 +44,7 @@ void wait_child(pid_t pid) {
   printf("Child exited with exit code: %d\n", pid_status);
 }
 
-void error_msg(const char* m) {
+static void error_msg(const char* m) {
   fprintf(stderr, "%s : %s\n", m, strerror(errno));
   exit(EXIT_FAILURE);
 }
