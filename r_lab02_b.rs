@@ -2,7 +2,7 @@ use std::thread;
 
 const N: usize = 15;
 struct Matrices(([[i32; N]; N]), [[i32; N]; N]);
-// Only education purpose!!!
+// Only for educational purpose!
 static mut RES: [[i32; N]; N] = [[0; N]; N];
 
 fn print_matrix(grid: &[[i32; N]; N]) {
