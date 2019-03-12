@@ -26,8 +26,33 @@
 
     ```c
     struct data {
-        int32_t a, b, c, total;
+        int a, b, c, total;
     }
     ```
 
     b) Addition of two matrices, calculate each row in separate thread(no datarace possible)
+
+3. Mutex (Mutual Exclusion)
+    * to avoid threads to update shared variable
+    * atomic access to any shared resource
+    * states: locked and unlocked
+    * deadlock: when two or more threads locks mutex
+
+    a) Create two functions(with mutex), each function will iterate counter 50 times, execute each function in 5 threads
+
+    ```c
+    // ex func1()
+    for (int i = 0; i < 50; ++i)
+        printf("Function 1 = %d; Thread = %d\n", counter, thread);
+    ```
+
+    b) Create two seperated threads(with mutex) that will execute same function, function should print from which threads it's executed and iterate 10 times with some math
+
+    ```c
+    // ex print_thread()
+    for (int i = 0; i < 10; ++i) {
+        switch(thread) {
+            case 1:
+                printf("Thread 1 = i = %d\n", (i * 1000) + 1);
+                break;
+    ```
