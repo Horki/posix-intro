@@ -1,6 +1,6 @@
 # Posix system development basics
 
-## Originally "win32" tasks, translated into POSIX env, in C (and something nearly in RUST)
+## Originally "win32" tasks from my university, translated into POSIX env, in C (and something nearly in RUST)
 
 1. Open a "gedit" program in child process, and output exit signal; ex: use kill, pkill to to quit "gedit"
 
@@ -56,3 +56,5 @@
                 printf("Thread 1 = i = %d\n", (i * 1000) + 1);
                 break;
     ```
+
+4. Simulate airport using mutex; 5 airplanes needs to land without crashing into each other
