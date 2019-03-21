@@ -58,3 +58,12 @@
     ```
 
 4. Simulate airport using mutex; 5 airplanes needs to land without crashing into each other
+    * Thread Safety
+    * thread-safe function: can be safely invokedby multiple threads at same time
+    * non-thread-safe function: usually use global or static varibles
+
+5. Semaphores
+
+    a) create two threads that iterate a number, with help of binary semaphores sync threads, so one thread increments *ONLY* odd number, other even
+
+    b) simulate warehouse work, trucks(producers) are storing items into warehouse, while workers(consumers) are taking items from warehouse, using [Producer-Consumer](https://en.wikipedia.org/wiki/Producer%E2%80%93consumer_problem) pattern with semaphores and circular buffer(ring)
