@@ -5,10 +5,10 @@ RUSTC=rustc
 RUSTC_FLAGS=-g --deny warnings
 
 C_BINS=c_lab01 c_lab02_a c_lab02_b c_lab03_a c_lab03_b c_lab04 \
-			 c_lab05_a c_lab05_b
+			 c_lab05_a c_lab05_b c_lab06
 
 R_BINS=r_lab01 r_lab02_a r_lab02_b r_lab03_a r_lab03_b r_lab04 \
-			 r_lab05_a r_lab05_b
+			 r_lab05_a r_lab05_b r_lab06
 
 all: $(C_BINS) $(R_BINS)
 

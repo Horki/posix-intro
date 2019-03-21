@@ -67,3 +67,5 @@
     a) create two threads that iterate a number, with help of binary semaphores sync threads, so one thread increments *ONLY* odd number, other even
 
     b) simulate warehouse work, trucks(producers) are storing items into warehouse, while workers(consumers) are taking items from warehouse, using [Producer-Consumer](https://en.wikipedia.org/wiki/Producer%E2%80%93consumer_problem) pattern with semaphores and circular buffer(ring)
+
+6. Modify Task 4, by using binary semaphore instead of mutex
