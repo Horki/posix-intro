@@ -4,3 +4,7 @@
 # Unignore all with extensions and Makefile
 !*.*
 !Makefile
+!/include
+
+# Ignore Text Files
+*.txt
