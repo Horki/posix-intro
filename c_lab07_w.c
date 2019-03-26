@@ -33,6 +33,11 @@ int main() {
   init_semaphores();
   create_mapping();
 
+  puts("Waiting read process!!!");
+  sem_wait(sem_one);
+  puts("Done!\n'0' for to exit\nStart writing...");
+  sem_post(sem_one);
+
   write_shared();
 
   close_semaphores();
@@ -47,7 +52,7 @@ static void init_semaphores() {
     SEM_ONE_NAME,      // Semaphore name
     O_CREAT,           // Flags
     S_IRUSR | S_IWUSR, // Permission
-    1                  // Value
+    0                  // Value
     )) == SEM_FAILED)
   	ERROR_MSG("Error init semaphore one");
   if ((sem_two = sem_open(SEM_TWO_NAME, O_CREAT, S_IRUSR | S_IWUSR, 0)) == SEM_FAILED)

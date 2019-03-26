@@ -19,9 +19,8 @@ static void close_semaphores();
 int fd;
 char *c;
 static void open_mapping();
-static void print_shared();
 static void close_mapping();
-
+static void print_shared();
 static void close_read(int);
 
 int main() {
@@ -32,6 +31,8 @@ int main() {
 
   open_semaphores();
   open_mapping();
+  sem_post(sem_one);
+  puts("Started reading\n\n");
 
   print_shared();
 
