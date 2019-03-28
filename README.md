@@ -29,7 +29,8 @@
     t | stopped by debugger during the tracing
     W | paging (not valid since the 2.6.xx kernel)
     X | dead (should never be seen)
-    Z |defunct ("zombie") process, terminated but not reaped by its parent
+    Z | defunct ("zombie") process, terminated but not reaped by its parent
+
     For BSD formats and when the stat keyword is used, additional characters may be displayed:
     Code | Name
     --- | ---
