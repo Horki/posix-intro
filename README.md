@@ -19,6 +19,7 @@
     15 | TERM | Request terminator, can be caught by process.
 
     [Proces States](https://en.wikipedia.org/wiki/Process_state#Primary_process_states), from [ps](https://en.wikipedia.org/wiki/Ps_(Unix)) man page
+
     Code | Name
     --- | ---
     D | uninterruptible sleep (usually IO)
@@ -32,6 +33,7 @@
     Z | defunct ("zombie") process, terminated but not reaped by its parent
 
     For BSD formats and when the stat keyword is used, additional characters may be displayed:
+
     Code | Name
     --- | ---
     < | high-priority (not nice to other users)
