@@ -41,7 +41,7 @@
     L | has pages locked into memory (for real-time and custom IO)
     s | is a session leader
     l | is multi-threaded (using CLONE_THREAD, like NPTL pthreads do)
-    + | is in the foreground process group
+    \+ | is in the foreground process group
 
 2. Intro to "pthreads", some advantages over processess:
     * thread creation is faster(cheaper) than process creation
