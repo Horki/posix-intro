@@ -9,6 +9,7 @@
     ```
 
     [Signal (IPC)](https://en.wikipedia.org/wiki/Signal_(IPC)) list of most used signals
+
     id | Name | Description
     --- | --- | ---
     1 | HUP  | Hangup. The controlling term (tty or pty)has exited
