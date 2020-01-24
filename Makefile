@@ -5,7 +5,8 @@ RUSTC=rustc
 RUSTC_FLAGS=-g --deny warnings
 
 C_BINS=c_lab01 c_lab02_a c_lab02_b c_lab03_a c_lab03_b c_lab04 \
-			 c_lab05_a c_lab05_b c_lab06 \
+			 c_lab05_a c_lab05_b c_lab05_c c_lab05_d \
+			 c_lab06 \
 			 c_lab07_w c_lab07_r
 
 R_BINS=r_lab01 r_lab02_a r_lab02_b r_lab03_a r_lab03_b r_lab04 \
