@@ -7,7 +7,6 @@
 #include <errno.h>
 #include <string.h>
 #include <pthread.h>
-#include <semaphore.h>
 #include <time.h>
 
 
@@ -21,6 +20,7 @@ static int32_t buffer[BUFFER_LEN] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 static size_t n_producers, n_consumers;
 static int32_t producer_idx_buff = 0;
 static int32_t consumer_idx_buff = 0;
+static int32_t count = 0;
 
 static void* consumer(void *);
 static void* producer(void *);
@@ -33,12 +33,12 @@ static const char* print_item(int32_t);
 
 // Threads, Semaphores
 #define NO_TH 5
-static sem_t sem_full, sem_empty, sem_lock;
+static pthread_mutex_t mut_lock = PTHREAD_MUTEX_INITIALIZER;
+static pthread_cond_t cond_full = PTHREAD_COND_INITIALIZER;
+static pthread_cond_t cond_empty = PTHREAD_COND_INITIALIZER;
 static pthread_t threads[NO_TH];
 static void wait_threads();
-static void init_semaphores();
 // static void cancel_threads();
-static void close_semaphores();
 static void error_msg(const char*);
 
 int main() {
@@ -59,7 +59,6 @@ int main() {
   printf("Number of trucks  (producers): %ld\n", n_producers);
   printf("Number of workers (consumers): %ld\n", n_consumers);
 
-  init_semaphores();
 
   for (size_t i = 0; i < n_producers; ++i) {
     thread_no[i] = i;
@@ -73,7 +72,6 @@ int main() {
   }
 
   wait_threads();
-  close_semaphores();
 
   return EXIT_SUCCESS;
 }
@@ -83,17 +81,20 @@ static void* producer(void *a) {
   int32_t item;
   while (true) {
     item = produce(); // generate item to put in buffer
-    sem_wait(&sem_empty);
-    sem_wait(&sem_lock);
+    pthread_mutex_lock(&mut_lock);
+    while (count == BUFFER_LEN) {
+      pthread_mutex_unlock(&mut_lock);
+      pthread_cond_wait(&cond_full, &mut_lock);
+      pthread_mutex_lock(&mut_lock);
+    }
 
     add_to_buffer(item);
     print_buffer();
     printf("\t\tTruck [%d] added %s to warehouse\n",
         producer_id, print_item(item));
-    sleep(1);
-
-    sem_post(&sem_lock);
-    sem_post(&sem_full);
+    // sleep(1);
+    if (count == 1) pthread_cond_signal(&cond_empty);
+    pthread_mutex_unlock(&mut_lock);
   }
   return NULL;
 }
@@ -103,18 +104,20 @@ static void* consumer(void *a) {
   int32_t item;
 
   while (true) {
-    sem_wait(&sem_full);
-    sem_wait(&sem_lock);
+    pthread_mutex_lock(&mut_lock);
+    while (count == 0) {
+      pthread_mutex_unlock(&mut_lock);
+      pthread_cond_wait(&cond_empty, &mut_lock);
+      pthread_mutex_lock(&mut_lock); 
+    }
 
     item = remove_from_buffer();
     print_buffer();
     printf("\t\tWorker [%d] take %s from warehouse\n",
         consumer_id, print_item(item));
-    sleep(1);
-
-    sem_post(&sem_lock);
-    sem_post(&sem_empty);
-
+    // sleep(1);
+    if (count == (BUFFER_LEN)) pthread_cond_signal(&cond_full);
+    pthread_mutex_unlock(&mut_lock);
     consume(consumer_id, item);
   }
   return NULL;
@@ -139,6 +142,7 @@ static void consume(int32_t consumer_id, int32_t item) {
 static void add_to_buffer(int32_t item) {
   buffer[producer_idx_buff] = item;
   // incr index to buffer
+  ++count;
   producer_idx_buff = (producer_idx_buff + 1) % BUFFER_LEN;
 }
 
@@ -167,23 +171,10 @@ static void print_buffer() {
 static int32_t remove_from_buffer() {
   int32_t item = buffer[consumer_idx_buff];
   buffer[consumer_idx_buff] = -1;
+  --count;
   consumer_idx_buff = (consumer_idx_buff + 1) % BUFFER_LEN;
 
   return item;
-}
-
-static void init_semaphores() {
-  // 0 = Semaphore is shared between threads of process
-  int32_t p_shared = 0;
-  sem_init(&sem_full,  p_shared, 0);
-  sem_init(&sem_empty, p_shared, BUFFER_LEN);
-  sem_init(&sem_lock,  p_shared, 1);
-}
-
-static void close_semaphores() {
-  sem_destroy(&sem_full);
-  sem_destroy(&sem_empty);
-  sem_destroy(&sem_lock);
 }
 
 // static void sig_int(int signo) {
