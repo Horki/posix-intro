@@ -1,7 +1,7 @@
 use std::thread;
 
 const N: usize = 15;
-struct Matrices(([[i32; N]; N]), [[i32; N]; N]);
+struct Matrices([[i32; N]; N], [[i32; N]; N]);
 // Only for educational purpose!
 static mut RES: [[i32; N]; N] = [[0; N]; N];
 
@@ -27,6 +27,10 @@ fn init() -> Matrices {
 
 fn main() {
     let Matrices(a, b) = init();
+    println!("Matrix A:");
+    print_matrix(&a);
+    println!("Matrix B:");
+    print_matrix(&b);
     let mut handles = Vec::with_capacity(N);
     for i in 0..N {
         handles.push(thread::spawn(move || {
@@ -42,8 +46,7 @@ fn main() {
     for handle in handles {
         handle.join().unwrap();
     }
-    // print_matrix(&a);
-    // print_matrix(&b);
+    println!("Matrix A + B:");
     unsafe {
         print_matrix(&RES);
     }
