@@ -32,7 +32,7 @@ int main() {
   open_semaphores();
   open_mapping();
   sem_post(sem_one);
-  puts("Started reading\n\n");
+  puts("Started reading\n");
 
   print_shared();
 
@@ -76,7 +76,7 @@ static void print_shared() {
     sem_wait(sem_two);
     putchar(*c);
     sem_post(sem_one);
-  } while (*c++ != '0');
+  } while (*c++ != END_CHAR);
 }
 
 static void close_mapping() {
@@ -86,6 +86,8 @@ static void close_mapping() {
 
 static void close_read(int sig) {
   fprintf(stderr, "Signal: %d, closing read process\n", sig);
+  *c = END_CHAR;
+  sem_post(sem_one);
   close_semaphores();
   close_mapping();
   exit(EXIT_SUCCESS);

@@ -35,7 +35,7 @@ int main() {
 
   puts("Waiting read process!!!");
   sem_wait(sem_one);
-  puts("Done!\n'0' for to exit\nStart writing...");
+  printf("Done!\n'%c' for to exit\nStart writing...\n", END_CHAR);
   sem_post(sem_one);
 
   write_shared();
@@ -90,7 +90,7 @@ static void create_mapping() {
       PROT_READ | PROT_WRITE, // Privileges
       MAP_SHARED,             // Flags: shared between procesess
       fd,                     // File descriptor
-      0                       // Offset: from begining
+      0                       // Offset: from beginning
   );
   printf("Open file '%s' with read+write perms\n", FILENAME);
 }
@@ -100,7 +100,7 @@ static void write_shared() {
     sem_wait(sem_one);
     *c = fgetc(stdin);
     sem_post(sem_two);
-  } while(*c++ != '0');
+  } while(*c++ != END_CHAR);
 }
 
 static void close_mapping() {
@@ -110,6 +110,8 @@ static void close_mapping() {
 
 static void close_write(int sig) {
   fprintf(stderr, "Signal: %d, closing write process\n", sig);
+  *c = END_CHAR;
+  sem_post(sem_two);
   close_semaphores();
   close_mapping();
   exit(EXIT_SUCCESS);
