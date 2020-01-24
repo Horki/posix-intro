@@ -10,7 +10,7 @@
 #define FILE_LEN 1024
 #define SEM_ONE_NAME "/one"
 #define SEM_TWO_NAME "/two"
-
+#define END_CHAR '0'
 
 #define STR_BUF 256
 #define FILENAME "/shared_object.txt"
