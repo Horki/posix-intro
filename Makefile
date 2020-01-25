@@ -41,4 +41,4 @@ shared_object.txt:
 	rustup run stable $(RUSTC) $(RUSTC_FLAGS) -o $@ $^
 
 clean:
-	rm -f $(C_BINS) $(R_BINS) *.txt
+	rm -f $(C_BINS) $(R_BINS) $(CPP_BINS) *.txt
