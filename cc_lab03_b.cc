@@ -14,7 +14,7 @@ void wait_threads(std::vector<std::thread> &);
 int main() {
   std::vector<std::thread> threads(NO_TH);
   for (size_t i = 0; i < NO_TH; ++i) {
-    threads.push_back(std::thread(print_thread, i));
+    threads.push_back(std::thread(func, i));
   }
   wait_threads(threads);
 }
