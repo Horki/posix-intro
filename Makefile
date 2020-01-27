@@ -9,7 +9,9 @@ RUSTC_FLAGS=-g --deny warnings
 
 CPP_BINS=cc_lab01 \
 				 cc_lab02_a cc_lab02_b \
-				 cc_lab03_a cc_lab03_b
+				 cc_lab03_a cc_lab03_b \
+				 cc_lab04 \
+				 cc_lab05_a
 
 C_BINS=c_lab01 c_lab02_a c_lab02_b c_lab03_a c_lab03_b c_lab04 \
 			 c_lab05_a c_lab05_b c_lab05_c c_lab05_d \
