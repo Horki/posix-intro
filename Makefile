@@ -11,7 +11,8 @@ CPP_BINS=cc_lab01 \
 				 cc_lab02_a cc_lab02_b \
 				 cc_lab03_a cc_lab03_b \
 				 cc_lab04 \
-				 cc_lab05_a cc_lab05_b
+				 cc_lab05_a cc_lab05_b \
+				 cc_lab06
 
 C_BINS=c_lab01 \
 			 c_lab02_a c_lab02_b \
