@@ -11,15 +11,22 @@ CPP_BINS=cc_lab01 \
 				 cc_lab02_a cc_lab02_b \
 				 cc_lab03_a cc_lab03_b \
 				 cc_lab04 \
-				 cc_lab05_a
+				 cc_lab05_a cc_lab05_b
 
-C_BINS=c_lab01 c_lab02_a c_lab02_b c_lab03_a c_lab03_b c_lab04 \
+C_BINS=c_lab01 \
+			 c_lab02_a c_lab02_b \
+			 c_lab03_a c_lab03_b \
+			 c_lab04 \
 			 c_lab05_a c_lab05_b c_lab05_c c_lab05_d \
 			 c_lab06 \
 			 c_lab07_w c_lab07_r
 
-R_BINS=r_lab01 r_lab02_a r_lab02_b r_lab03_a r_lab03_b r_lab04 \
-			 r_lab05_a r_lab05_b r_lab06
+R_BINS=r_lab01 \
+			 r_lab02_a r_lab02_b \
+			 r_lab03_a r_lab03_b \
+			 r_lab04 \
+			 r_lab05_a r_lab05_b \
+			 r_lab06
 
 all: $(C_BINS) $(R_BINS) $(CPP_BINS)
 
@@ -37,6 +44,9 @@ shared_object.txt:
 
 cc_lab01: cc_lab01.cc
 	$(CPP) $(CPP_FLAGS) -o $@ $^
+
+cc_lab05_b: cc_lab05_b.cc include/buffer.hh
+	$(CPP) $(CPP_FLAGS) -Iinclude -o $@ $< -pthread
 
 %: %.cc
 	$(CPP) $(CPP_FLAGS) -o $@ $^ -pthread
