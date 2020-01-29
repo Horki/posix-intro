@@ -1,3 +1,8 @@
+UNAME := $(shell uname)
+ifeq ($(UNAME), Darwin)
+	OSX_BIN=*.dSYM
+endif
+
 CC=clang
 C_FLAGS=-std=gnu11 -Wall -Werror -g
 
@@ -59,4 +64,4 @@ cc_lab05_b: cc_lab05_b.cc include/buffer.hh
 	rustup run stable $(RUSTC) $(RUSTC_FLAGS) -o $@ $^
 
 clean:
-	rm -f $(C_BINS) $(R_BINS) $(CPP_BINS) *.txt
+	rm -rf $(C_BINS) $(R_BINS) $(CPP_BINS) $(OSX_BIN) *.txt
