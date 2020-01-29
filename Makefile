@@ -55,10 +55,10 @@ cc_lab05_b: cc_lab05_b.cc include/buffer.hh
 	$(CPP) $(CPP_FLAGS) -Iinclude -o $@ $< -pthread
 
 %: %.cc
-	$(CPP) $(CPP_FLAGS) -o $@ $^ -pthread
+	$(CPP) $(CPP_FLAGS) -Iinclude -o $@ $^ -pthread
 
 %: %.c
-	$(CC) $(C_FLAGS) -o $@ $^ -lpthread
+	$(CC) $(C_FLAGS) -Iinclude -o $@ $^ -lpthread
 
 %: %.rs
 	rustup run stable $(RUSTC) $(RUSTC_FLAGS) -o $@ $^

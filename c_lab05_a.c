@@ -5,7 +5,7 @@
 #include <errno.h>
 #include <string.h>
 #include <pthread.h>
-#include <semaphore.h>
+#include "init_sem.h"
 
 #define NO_TH 2
 #define MAX_N 30
