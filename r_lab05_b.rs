@@ -81,8 +81,10 @@ impl Buffer {
             .set((self.consumer_idx.get() + 1) % self.len);
         item
     }
+}
 
-    fn print_buff(&self) {
+impl fmt::Display for Buffer {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let mut res = String::new();
         res.push('[');
         for i in 0..self.len {
@@ -96,7 +98,7 @@ impl Buffer {
             }
         }
         res.push(']');
-        print!("{}", res);
+        write!(f, "{}", res)
     }
 }
 
@@ -152,8 +154,12 @@ fn main() {
                     let buffer = buffer.lock().unwrap();
                     item = produce();
                     buffer.add(item);
-                    buffer.print_buff();
-                    println!("\t\tTruck [{}] added {} to warehouse", i + 1, item);
+                    println!(
+                        "{}\t\tTruck [{}] added {} to warehouse",
+                        buffer,
+                        i + 1,
+                        item
+                    );
                     thread::sleep(time::Duration::from_secs(1));
                 } // unlock
                 sem_full.post();
@@ -172,8 +178,12 @@ fn main() {
                 {
                     let buffer = buffer.lock().unwrap();
                     item = buffer.remove();
-                    buffer.print_buff();
-                    println!("\t\tWorker [{}] take {} from warehouse", i + 1, item);
+                    println!(
+                        "{}\t\tWorker [{}] take {} from warehouse",
+                        buffer,
+                        i + 1,
+                        item
+                    );
                     consume(i + 1, item);
                     thread::sleep(time::Duration::from_secs(1));
                 } // unlock
