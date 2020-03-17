@@ -58,7 +58,7 @@ impl Buffer {
     fn new(len: usize) -> Self {
         Self {
             sloths: vec![Cell::new(Sloth::Empty); len],
-            len: len,
+            len,
             producer_idx: Cell::new(0),
             consumer_idx: Cell::new(0),
         }
