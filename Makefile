@@ -36,14 +36,14 @@ R_BINS=r_lab01 \
 
 all: $(C_BINS) $(R_BINS) $(CPP_BINS)
 
-c_lab01: c_lab01.c
-	$(CC) $(C_FLAGS) -o $@ $^
+c_lab01: c/c_lab01.c
+	mkdir -p bin/c && $(CC) $(C_FLAGS) -o bin/c/$@ $^
 
-c_lab07_w: c_lab07_w.c include/types.h shared_object.txt
-	$(CC) $(C_FLAGS) -Iinclude -o $@ $< -lpthread
+c_lab07_w: c/c_lab07_w.c include/types.h shared_object.txt
+	mkdir -p bin/c && $(CC) $(C_FLAGS) -Iinclude -o bin/c/$@ $< -lpthread
 
-c_lab07_r: c_lab07_r.c include/types.h shared_object.txt
-	$(CC) $(C_FLAGS) -Iinclude -o $@ $< -lpthread
+c_lab07_r: c/c_lab07_r.c include/types.h shared_object.txt
+	mkdir -p bin/c && $(CC) $(C_FLAGS) -Iinclude -o bin/c/$@ $< -lpthread
 
 shared_object.txt:
 	echo "" > $@
@@ -57,8 +57,8 @@ cc_lab05_b: cc_lab05_b.cc include/buffer.hh
 %: %.cc
 	$(CPP) $(CPP_FLAGS) -Iinclude -o $@ $^ -pthread
 
-%: %.c
-	$(CC) $(C_FLAGS) -Iinclude -o $@ $^ -lpthread
+%: c/%.c
+	mkdir -p bin/c && $(CC) $(C_FLAGS) -Iinclude -o bin/c/$@ $^ -lpthread
 
 %: rust/%.rs
 	mkdir -p bin/rust && rustup run stable $(RUSTC) $(RUSTC_FLAGS) -o bin/rust/$@ $^
