@@ -23,7 +23,7 @@ C_BINS=c_lab01 \
 			 c_lab02_a c_lab02_b \
 			 c_lab03_a c_lab03_b \
 			 c_lab04 \
-			 c_lab05_a c_lab05_b c_lab05_c c_lab05_d \
+			 c_lab05_a c_lab05_b \
 			 c_lab06 \
 			 c_lab07_w c_lab07_r
 
@@ -48,14 +48,14 @@ c_lab07_r: c/c_lab07_r.c include/types.h shared_object.txt
 shared_object.txt:
 	echo "" > $@
 
-cc_lab01: cc_lab01.cc
-	$(CPP) $(CPP_FLAGS) -o $@ $^
+cc_lab01: cpp/cc_lab01.cc
+	mkdir -p bin/cpp && $(CPP) $(CPP_FLAGS) -o bin/cpp/$@ $^
 
-cc_lab05_b: cc_lab05_b.cc include/buffer.hh
-	$(CPP) $(CPP_FLAGS) -Iinclude -o $@ $< -pthread
+cc_lab05_b: cpp/cc_lab05_b.cc include/buffer.hh
+	mkdir -p bin/cpp && $(CPP) $(CPP_FLAGS) -Iinclude -o bin/cpp/$@ $< -pthread
 
-%: %.cc
-	$(CPP) $(CPP_FLAGS) -Iinclude -o $@ $^ -pthread
+%: cpp/%.cc
+	mkdir -p bin/cpp && $(CPP) $(CPP_FLAGS) -Iinclude -o bin/cpp/$@ $^ -pthread
 
 %: c/%.c
 	mkdir -p bin/c && $(CC) $(C_FLAGS) -Iinclude -o bin/c/$@ $^ -lpthread
