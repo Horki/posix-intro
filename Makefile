@@ -60,8 +60,8 @@ cc_lab05_b: cc_lab05_b.cc include/buffer.hh
 %: %.c
 	$(CC) $(C_FLAGS) -Iinclude -o $@ $^ -lpthread
 
-%: %.rs
-	rustup run stable $(RUSTC) $(RUSTC_FLAGS) -o $@ $^
+%: rust/%.rs
+	mkdir -p bin/rust && rustup run stable $(RUSTC) $(RUSTC_FLAGS) -o bin/rust/$@ $^
 
 clean:
-	rm -rf $(C_BINS) $(R_BINS) $(CPP_BINS) $(OSX_BIN) *.txt
+	rm -rf bin/ *.txt
