@@ -27,7 +27,8 @@ C_BINS=bin/c/c_lab01 \
 			 bin/c/c_lab06 \
 			 bin/c/c_lab07_ipc_shm_w bin/c/c_lab07_ipc_shm_r \
 			 bin/c/c_lab07_ipc_socket_server bin/c/c_lab07_ipc_socket_client \
-			 bin/c/c_lab07_ipc_mq_write bin/c/c_lab07_ipc_mq_read
+			 bin/c/c_lab07_ipc_mq_write bin/c/c_lab07_ipc_mq_read \
+			 bin/c/c_lab07_ipc_pipe
 
 R_BINS=bin/rust/r_lab01 \
 			 bin/rust/r_lab02_a bin/rust/r_lab02_b \
@@ -58,6 +59,9 @@ bin/c/c_lab07_ipc_mq_write: c/ipc/message_passing/message_queue/write.c c/ipc/in
 
 bin/c/c_lab07_ipc_mq_read: c/ipc/message_passing/message_queue/read.c c/ipc/include/type.h
 	mkdir -p bin/c && $(CC) $(C_FLAGS) -Ic/ipc/include -o $@ $<
+
+bin/c/c_lab07_ipc_pipe: c/ipc/message_passing/pipe/twowaypipe.c
+	mkdir -p bin/c && $(CC) $(C_FLAGS) -o $@ $<
 
 shared_object.txt:
 	echo "" > $@
