@@ -1,11 +1,11 @@
 #include <iostream>
+#include <mutex>
 #include <thread>
 #include <vector>
-#include <mutex>
 
 static constexpr size_t NO_TH = 2;
-static constexpr size_t N     = 10;
-std::mutex              mut;
+static constexpr size_t N = 10;
+std::mutex mut;
 
 void func(const size_t);
 void print_thread(const size_t);
@@ -30,7 +30,7 @@ void print_thread(const size_t n) {
   for (size_t i = 0; i < N; ++i) {
     switch (n) {
       case 0:
-        std::cout << "Thread I : i = "  << ((i * 1000) + 1) << std::endl;
+        std::cout << "Thread I : i = " << ((i * 1000) + 1) << std::endl;
         break;
       case 1:
         std::cout << "Thread II : i = " << ((i * 1000) + 1) << std::endl;
@@ -41,8 +41,8 @@ void print_thread(const size_t n) {
   }
 }
 
-void wait_threads(std::vector<std::thread> & threads) {
-  for (auto & t : threads) {
+void wait_threads(std::vector<std::thread> &threads) {
+  for (auto &t : threads) {
     if (t.joinable()) {
       t.join();
     }

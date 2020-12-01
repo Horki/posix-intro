@@ -1,8 +1,8 @@
+#include <buffer.hh>
+#include <cassert>
 #include <iostream>
 #include <thread>
 #include <vector>
-#include <cassert>
-#include <buffer.hh>
 
 static constexpr size_t NO_TH = 5;
 static void wait_threads(std::vector<std::thread> &);
@@ -31,11 +31,10 @@ int main() {
   wait_threads(threads);
 }
 
-void wait_threads(std::vector<std::thread> & threads) {
-  for (auto & t : threads) {
+void wait_threads(std::vector<std::thread> &threads) {
+  for (auto &t : threads) {
     if (t.joinable()) {
       t.join();
     }
   }
 }
-

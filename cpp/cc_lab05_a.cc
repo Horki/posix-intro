@@ -1,12 +1,13 @@
+#include <semaphore.h>
+
 #include <iostream>
 #include <thread>
 #include <vector>
-#include <semaphore.h>
 
 static constexpr size_t NO_TH = 2;
 static constexpr size_t MAX_N = 30;
-static           size_t counter = 1;
-static           sem_t  sem_even, sem_odd;
+static size_t counter = 1;
+static sem_t sem_even, sem_odd;
 
 void init_semaphores();
 void print_odd();
@@ -24,10 +25,10 @@ int main() {
 }
 
 void init_semaphores() {
-  // 0 = Semaphore is shared between threads of process 
+  // 0 = Semaphore is shared between threads of process
   int p_shared = 0;
   // 1 unlocked for 'odd' semaphore
-  if (sem_init(&sem_odd,  p_shared, 1) != 0) {
+  if (sem_init(&sem_odd, p_shared, 1) != 0) {
     std::cerr << "Error init semaphore for odd lock\n";
   }
   // 0 locked for 'even' semaphore
@@ -36,8 +37,8 @@ void init_semaphores() {
   }
 }
 
-void wait_threads(std::vector<std::thread> & threads) {
-  for (auto & t : threads) {
+void wait_threads(std::vector<std::thread> &threads) {
+  for (auto &t : threads) {
     if (t.joinable()) {
       t.join();
     }
@@ -70,4 +71,3 @@ void close_semaphores() {
     std::cerr << "Error destroying Semaphore even lock\n";
   }
 }
-

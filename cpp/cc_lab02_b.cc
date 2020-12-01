@@ -1,14 +1,14 @@
-#include <iostream>  // cout
-#include <vector>    // vecot
-#include <algorithm> // copy
-#include <iterator>  // ostream_iterator
-#include <thread>    // thread
-#include <numeric>   // iota
+#include <algorithm>  // copy
+#include <iostream>   // cout
+#include <iterator>   // ostream_iterator
+#include <numeric>    // iota
+#include <thread>     // thread
+#include <vector>     // vecot
 
 static constexpr size_t N = 15;
 
-std::vector<std::vector<int>> v1 (N, std::vector<int>(N, 2000));
-std::vector<std::vector<int>> v2 (N, std::vector<int>(N));
+std::vector<std::vector<int>> v1(N, std::vector<int>(N, 2000));
+std::vector<std::vector<int>> v2(N, std::vector<int>(N));
 std::vector<std::vector<int>> res(N, std::vector<int>(N));
 
 void init();
@@ -25,26 +25,25 @@ int main() {
   for (size_t i = 0; i < N; ++i) {
     threads.push_back(std::thread(calculate, i));
   }
-  for (auto & th : threads) {
+  for (auto &th : threads) {
     if (th.joinable()) {
       th.join();
     }
   }
   std::cout << "Matrix A + B\n";
   print_matrix(res);
-
 }
 
-void print_matrix(const std::vector<std::vector<int>> & v) {
-  for (const auto & row : v) {
-    std::copy(row.begin(), row.end(), std::ostream_iterator<int>(std::cout, " "));
+void print_matrix(const std::vector<std::vector<int>> &v) {
+  for (const auto &row : v) {
+    std::copy(row.begin(), row.end(),
+              std::ostream_iterator<int>(std::cout, " "));
     std::cout << std::endl;
   }
 }
 
-
 void init() {
-  for (auto & row : v2) {
+  for (auto &row : v2) {
     std::iota(row.begin(), row.end(), 1);
   }
 }

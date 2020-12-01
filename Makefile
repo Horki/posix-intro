@@ -28,7 +28,8 @@ C_BINS=bin/c/c_lab01 \
 			 bin/c/c_lab07_ipc_shm_w bin/c/c_lab07_ipc_shm_r \
 			 bin/c/c_lab07_ipc_socket_server bin/c/c_lab07_ipc_socket_client \
 			 bin/c/c_lab07_ipc_mq_write bin/c/c_lab07_ipc_mq_read \
-			 bin/c/c_lab07_ipc_pipe
+			 bin/c/c_lab07_ipc_pipe \
+			 bin/c/c_lab07_ipc_shm_w bin/c/c_lab07_ipc_shm_r
 
 R_BINS=bin/rust/r_lab01 \
 			 bin/rust/r_lab02_a bin/rust/r_lab02_b \
@@ -42,11 +43,11 @@ all: $(C_BINS) $(R_BINS) $(CPP_BINS)
 bin/c/c_lab01: c/c_lab01.c
 	mkdir -p bin/c && $(CC) $(C_FLAGS) -o $@ $^
 
-bin/c/c_lab07_ipc_shm_w: c/c_lab07_ipc_shm_w.c c/include/types.h shared_object.txt
-	mkdir -p bin/c && $(CC) $(C_FLAGS) -Ic/include -o $@ $< -lpthread
+bin/c/c_lab07_ipc_shm_w: c/ipc/memory_based/shared_memory/write.c c/ipc/include/types.h shared_object.txt
+	mkdir -p bin/c && $(CC) $(C_FLAGS) -Ic/ipc/include -o $@ $< -lpthread
 
-bin/c/c_lab07_ipc_shm_r: c/c_lab07_ipc_shm_r.c c/include/types.h shared_object.txt
-	mkdir -p bin/c && $(CC) $(C_FLAGS) -Ic/include -o $@ $< -lpthread
+bin/c/c_lab07_ipc_shm_r: c/ipc/memory_based/shared_memory/read.c c/ipc/include/types.h shared_object.txt
+	mkdir -p bin/c && $(CC) $(C_FLAGS) -Ic/ipc/include -o $@ $< -lpthread
 
 bin/c/c_lab07_ipc_socket_server: c/ipc/message_passing/socket/server.c c/ipc/include/common.h
 	mkdir -p bin/c && $(CC) $(C_FLAGS) -Ic/ipc/include -o $@ $<
@@ -80,6 +81,9 @@ bin/c/%: c/%.c
 
 bin/rust/%: rust/%.rs
 	mkdir -p bin/rust && rustup run stable $(RUSTC) $(RUSTC_FLAGS) -o $@ $^
+
+format:
+	rustfmt rust/*.rs && cd cpp && clang-format *.cc include/*.hh -i && cd ..
 
 clean:
 	rm -rf bin/ *.txt $(OSX_BIN)
