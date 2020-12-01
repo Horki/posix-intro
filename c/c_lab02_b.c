@@ -1,9 +1,9 @@
+#include <errno.h>
+#include <pthread.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h>
-#include <errno.h>
 #include <string.h>
-#include <pthread.h>
 
 #define N 15
 
@@ -16,7 +16,7 @@ static int32_t res[N][N];
 static pthread_t threads[N];
 
 static void error_msg(const char *);
-static void* calculate_row(void *);
+static void *calculate_row(void *);
 static void init();
 static void print_matrix(int mat[][N]);
 static void wait_threads();
@@ -26,8 +26,9 @@ int main() {
   int32_t thread_no[N];
   for (int32_t i = 0; i < N; ++i) {
     thread_no[i] = i;
-    if (pthread_create(&threads[i], NULL, calculate_row, (void *) &thread_no[i]) != 0)
-       error_msg("Can't create thread");
+    if (pthread_create(&threads[i], NULL, calculate_row,
+                       (void *)&thread_no[i]) != 0)
+      error_msg("Can't create thread");
   }
 
   wait_threads();
@@ -38,12 +39,11 @@ int main() {
   return EXIT_SUCCESS;
 }
 
-static void* calculate_row(void *d) {
-  int32_t row = *(int32_t *) d;
+static void *calculate_row(void *d) {
+  int32_t row = *(int32_t *)d;
   printf("Calculating in %d. thread!\n", row + 1);
   // Calculate one matrix row
-  for (int32_t j = 0; j < N; ++j)
-    res[row][j] = a[row][j] + b[row][j];
+  for (int32_t j = 0; j < N; ++j) res[row][j] = a[row][j] + b[row][j];
 
   printf("Calculated in %d. thread! DONE!\n", row + 1);
 
@@ -61,19 +61,17 @@ static void init() {
 
 static void print_matrix(int32_t mat[][N]) {
   for (int32_t i = 0; i < N; ++i) {
-    for (int32_t j = 0; j < N; ++j)
-      printf("%d ", mat[i][j]);
+    for (int32_t j = 0; j < N; ++j) printf("%d ", mat[i][j]);
     printf("\n");
   }
 }
 
-static void error_msg(const char* m) {
+static void error_msg(const char *m) {
   fprintf(stderr, "%s : %s\n", m, strerror(errno));
   exit(EXIT_FAILURE);
 }
 
 static void wait_threads() {
   for (int32_t i = 0; i < N; ++i)
-    if (pthread_join(threads[i], NULL) != 0)
-      error_msg("Can't join thread t");
+    if (pthread_join(threads[i], NULL) != 0) error_msg("Can't join thread t");
 }

@@ -15,7 +15,7 @@ typedef struct monitor_tag {
 } monitor_tag;
 
 monitor_tag* monitor_init() {
-  monitor_tag *m = (monitor_tag *) malloc(sizeof(monitor_tag));
+  monitor_tag* m = (monitor_tag*)malloc(sizeof(monitor_tag));
   m->somebody_waits = 0;
   m->cnt = 0;
   // m->mut = PTHREAD_MUTEX_INITIALIZER;
@@ -52,6 +52,5 @@ void monitor_destroy(monitor_tag* m) {
   free(m);
   m = NULL;
 }
-
 
 #endif

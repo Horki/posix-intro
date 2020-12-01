@@ -1,15 +1,14 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdint.h>
-#include <signal.h>
-#include <unistd.h>
-#include <stdbool.h>
 #include <errno.h>
-#include <string.h>
 #include <pthread.h>
 #include <semaphore.h>
+#include <signal.h>
+#include <stdbool.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <time.h>
-
+#include <unistd.h>
 
 // Signals
 // static void sig_int(int);
@@ -17,19 +16,19 @@
 
 // Producer Consumer
 #define BUFFER_LEN 10
-static int32_t buffer[BUFFER_LEN] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+static int32_t buffer[BUFFER_LEN] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 static size_t n_producers, n_consumers;
 static int32_t producer_idx_buff = 0;
 static int32_t consumer_idx_buff = 0;
 
-static void* consumer(void *);
-static void* producer(void *);
+static void *consumer(void *);
+static void *producer(void *);
 static int32_t produce();
 static void print_buffer();
 static void add_to_buffer(int32_t);
 static int32_t remove_from_buffer();
 static void consume(int32_t, int32_t);
-static const char* print_item(int32_t);
+static const char *print_item(int32_t);
 
 // Threads, Semaphores
 #define NO_TH 5
@@ -39,14 +38,14 @@ static void wait_threads();
 static void init_semaphores();
 // static void cancel_threads();
 static void close_semaphores();
-static void error_msg(const char*);
+static void error_msg(const char *);
 
 int main() {
   // TODO: add signal handler for SIGINT and close threads properly
   srand(time(NULL));
   // if (catch_signal(SIGINT, sig_int) == -1) {
-    // fprintf(stderr, "Can't map the signal handler\n");
-    // exit(2);
+  // fprintf(stderr, "Can't map the signal handler\n");
+  // exit(2);
   // }
   puts("Warehouse schema");
   puts("\t0 Empty slot");
@@ -63,12 +62,14 @@ int main() {
 
   for (size_t i = 0; i < n_producers; ++i) {
     thread_no[i] = i;
-    if (pthread_create(&threads[i], NULL, producer, (void *) &thread_no[i]) == -1)
+    if (pthread_create(&threads[i], NULL, producer, (void *)&thread_no[i]) ==
+        -1)
       error_msg("Can't create threads for producers (trucks)");
   }
   for (size_t i = 0; i < n_consumers; ++i) {
     thread_no[i] = i;
-    if (pthread_create(&threads[i + n_producers], NULL, consumer, (void *) &thread_no[i]) == -1)
+    if (pthread_create(&threads[i + n_producers], NULL, consumer,
+                       (void *)&thread_no[i]) == -1)
       error_msg("Can't create threads for consumers (workers)");
   }
 
@@ -78,18 +79,18 @@ int main() {
   return EXIT_SUCCESS;
 }
 
-static void* producer(void *a) {
-  const int32_t producer_id = (*(int32_t *) a) + 1;
+static void *producer(void *a) {
+  const int32_t producer_id = (*(int32_t *)a) + 1;
   int32_t item;
   while (true) {
-    item = produce(); // generate item to put in buffer
+    item = produce();  // generate item to put in buffer
     sem_wait(&sem_empty);
     sem_wait(&sem_lock);
 
     add_to_buffer(item);
     print_buffer();
-    printf("\t\tTruck [%d] added %s to warehouse\n",
-        producer_id, print_item(item));
+    printf("\t\tTruck [%d] added %s to warehouse\n", producer_id,
+           print_item(item));
     sleep(1);
 
     sem_post(&sem_lock);
@@ -98,8 +99,8 @@ static void* producer(void *a) {
   return NULL;
 }
 
-static void* consumer(void *a) {
-  const int32_t consumer_id = (*(int32_t *) a) + 1;
+static void *consumer(void *a) {
+  const int32_t consumer_id = (*(int32_t *)a) + 1;
   int32_t item;
 
   while (true) {
@@ -108,8 +109,8 @@ static void* consumer(void *a) {
 
     item = remove_from_buffer();
     print_buffer();
-    printf("\t\tWorker [%d] take %s from warehouse\n",
-        consumer_id, print_item(item));
+    printf("\t\tWorker [%d] take %s from warehouse\n", consumer_id,
+           print_item(item));
     sleep(1);
 
     sem_post(&sem_lock);
@@ -120,7 +121,7 @@ static void* consumer(void *a) {
   return NULL;
 }
 
-static void error_msg(const char* m) {
+static void error_msg(const char *m) {
   fprintf(stderr, "%s: %s\n", m, strerror(errno));
   exit(EXIT_FAILURE);
 }
@@ -132,8 +133,8 @@ static int32_t produce() {
 }
 
 static void consume(int32_t consumer_id, int32_t item) {
-  fprintf(stderr, "Worker [%d] sending %s to costumer\n",
-      consumer_id, print_item(item));
+  fprintf(stderr, "Worker [%d] sending %s to costumer\n", consumer_id,
+          print_item(item));
 }
 
 static void add_to_buffer(int32_t item) {
@@ -142,7 +143,7 @@ static void add_to_buffer(int32_t item) {
   producer_idx_buff = (producer_idx_buff + 1) % BUFFER_LEN;
 }
 
-// 
+//
 // Warehouse
 //
 // 0 -> empty space in warehouse
@@ -175,9 +176,9 @@ static int32_t remove_from_buffer() {
 static void init_semaphores() {
   // 0 = Semaphore is shared between threads of process
   int32_t p_shared = 0;
-  sem_init(&sem_full,  p_shared, 0);
+  sem_init(&sem_full, p_shared, 0);
   sem_init(&sem_empty, p_shared, BUFFER_LEN);
-  sem_init(&sem_lock,  p_shared, 1);
+  sem_init(&sem_lock, p_shared, 1);
 }
 
 static void close_semaphores() {
@@ -187,15 +188,15 @@ static void close_semaphores() {
 }
 
 // static void sig_int(int signo) {
-  // printf("Catch signal %d\n", signo);
-  // // Threads
-  // puts("Closing threads");
-  // cancel_threads();
-  // // Semaphores
-  // puts("Closing semaphores");
-  // close_semaphores();
-  // puts("Done");
-  // exit(EXIT_SUCCESS);
+// printf("Catch signal %d\n", signo);
+// // Threads
+// puts("Closing threads");
+// cancel_threads();
+// // Semaphores
+// puts("Closing semaphores");
+// close_semaphores();
+// puts("Done");
+// exit(EXIT_SUCCESS);
 // }
 
 // TODO: fix LEAK, when closing
@@ -204,11 +205,11 @@ static void close_semaphores() {
 /*       indirectly lost: 0 bytes in 0 blocks */
 /*         possibly lost: 1,360 bytes in 5 blocks */
 // static int catch_signal(int signo, void (*handler)(int)) {
-  // struct sigaction action;
-  // action.sa_handler = handler;
-  // sigemptyset(&action.sa_mask);
-  // action.sa_flags = 0;
-  // return sigaction(signo, &action, NULL);
+// struct sigaction action;
+// action.sa_handler = handler;
+// sigemptyset(&action.sa_mask);
+// action.sa_flags = 0;
+// return sigaction(signo, &action, NULL);
 // }
 
 static void wait_threads() {
@@ -217,14 +218,13 @@ static void wait_threads() {
       error_msg("Unable to join producer threads");
 }
 
-
 // static void cancel_threads() {
-  // for (size_t i = 0; i < NO_TH; ++i)
-    // if (pthread_cancel(threads[i]) != 0)
-      // error_msg("Unable to cancel producer threads");
+// for (size_t i = 0; i < NO_TH; ++i)
+// if (pthread_cancel(threads[i]) != 0)
+// error_msg("Unable to cancel producer threads");
 // }
 
-static const char* print_item(int32_t item) {
+static const char *print_item(int32_t item) {
   // printf("item = %d\n", item);
   switch (item) {
     case 1:

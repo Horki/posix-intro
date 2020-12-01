@@ -1,10 +1,10 @@
+#include <errno.h>  // errno
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h> // getpid
-#include <sys/types.h> // pid_t
-#include <sys/wait.h> // waitpid
-#include <errno.h> // errno
-#include <string.h> // strerror
+#include <string.h>     // strerror
+#include <sys/types.h>  // pid_t
+#include <sys/wait.h>   // waitpid
+#include <unistd.h>     // getpid
 
 static void error_msg(const char*);
 static void execute_child(pid_t);
@@ -12,16 +12,14 @@ static void wait_child(pid_t);
 
 int main() {
   pid_t pid = fork();
-  if (pid == -1)
-    error_msg("Can't fork process");
+  if (pid == -1) error_msg("Can't fork process");
 
   if (!pid) {
     // child process
     execute_child(pid);
   } else {
     // parent process
-    printf("I'm a parent process[ppid=%d] waiting for a child\n",
-        getpid());
+    printf("I'm a parent process[ppid=%d] waiting for a child\n", getpid());
     wait_child(pid);
   }
 

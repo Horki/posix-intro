@@ -1,16 +1,16 @@
+#include <errno.h>
+#include <pthread.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h>
-#include <errno.h>
 #include <string.h>
-#include <pthread.h>
 
 #define NO_TH 2
 
 static pthread_mutex_t mut = PTHREAD_MUTEX_INITIALIZER;
 
-static void* func(void *);
-static void error_msg(const char*);
+static void *func(void *);
+static void error_msg(const char *);
 static void print_thread(const int32_t);
 static void wait_threads();
 
@@ -20,7 +20,7 @@ int main() {
   int32_t thread_no[NO_TH];
   for (int32_t i = 0; i < NO_TH; ++i) {
     thread_no[i] = i;
-    if (pthread_create(&threads[i], NULL, func, (void *) &thread_no[i]) != 0)
+    if (pthread_create(&threads[i], NULL, func, (void *)&thread_no[i]) != 0)
       error_msg("Error creating thread for func");
   }
 
@@ -29,7 +29,7 @@ int main() {
   return EXIT_SUCCESS;
 }
 
-static void error_msg(const char* m) {
+static void error_msg(const char *m) {
   fprintf(stderr, "%s: %s\n", m, strerror(errno));
   exit(EXIT_FAILURE);
 }
@@ -49,8 +49,8 @@ static void print_thread(const int32_t thread) {
   }
 }
 
-static void* func(void *a) {
-  const int32_t n = *(int32_t *) a; 
+static void *func(void *a) {
+  const int32_t n = *(int32_t *)a;
   for (int32_t i = 0; i < 10; ++i) {
     pthread_mutex_lock(&mut);
     print_thread(n);

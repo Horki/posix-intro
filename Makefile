@@ -83,7 +83,9 @@ bin/rust/%: rust/%.rs
 	mkdir -p bin/rust && rustup run stable $(RUSTC) $(RUSTC_FLAGS) -o $@ $^
 
 format:
-	rustfmt rust/*.rs && cd cpp && clang-format *.cc include/*.hh -i && cd ..
+	rustfmt rust/*.rs && clang-format cpp/*.cc cpp/include/*.hh c/*.c \
+		c/include/*.h c/ipc/include/*.h \
+		c/ipc/message_passing/*/*.c c/ipc/memory_based/*/*.c -i
 
 clean:
 	rm -rf bin/ *.txt $(OSX_BIN)

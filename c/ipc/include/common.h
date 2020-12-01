@@ -1,17 +1,17 @@
 #ifndef COMMON_H_
 #define COMMON_H_
 
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdbool.h>
 
 #define BUFFER_SIZE 20
 
 void report(const char *msg, bool terminate) {
-    perror(msg);
-    if (terminate) {
-        exit(EXIT_FAILURE);
-    }
+  perror(msg);
+  if (terminate) {
+    exit(EXIT_FAILURE);
+  }
 }
 
 const char *HOST = "localhost";

@@ -1,11 +1,11 @@
 #ifndef __TYPES_H_
 #define __TYPES_H_
 
+#include <errno.h>
+#include <signal.h>
+#include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
-#include <errno.h>
-#include <stdbool.h>
-#include <signal.h>
 
 #define FILE_LEN 1024
 #define SEM_ONE_NAME "/one"
@@ -13,7 +13,7 @@
 #define END_CHAR '0'
 
 #define STR_BUF 256
-#define FILENAME "/shared_object.txt"
+#define FILENAME "../../shared_object.txt"
 
 #define ERROR_MSG(MSG)                              \
   do {                                              \
