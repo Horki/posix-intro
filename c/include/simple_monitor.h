@@ -14,8 +14,8 @@ typedef struct monitor_tag {
   pthread_cond_t cond;
 } monitor_tag;
 
-monitor_tag* monitor_init() {
-  monitor_tag* m = (monitor_tag*)malloc(sizeof(monitor_tag));
+monitor_tag *monitor_init() {
+  monitor_tag *m = (monitor_tag *)malloc(sizeof(monitor_tag));
   m->somebody_waits = 0;
   m->cnt = 0;
   // m->mut = PTHREAD_MUTEX_INITIALIZER;
@@ -26,7 +26,7 @@ monitor_tag* monitor_init() {
   return m;
 }
 
-void monitor_wait(monitor_tag* m) {
+void monitor_wait(monitor_tag *m) {
   pthread_mutex_lock(&m->mut);
   m->somebody_waits = 1;
   pthread_cond_wait(&m->cond, &m->mut);
@@ -34,7 +34,7 @@ void monitor_wait(monitor_tag* m) {
   pthread_mutex_unlock(&m->mut);
 }
 
-void monitor_knock(monitor_tag* m) {
+void monitor_knock(monitor_tag *m) {
   pthread_mutex_lock(&m->mut);
   if (m->somebody_waits == 1) {
     m->cnt++;
@@ -46,7 +46,7 @@ void monitor_knock(monitor_tag* m) {
   pthread_mutex_unlock(&m->mut);
 }
 
-void monitor_destroy(monitor_tag* m) {
+void monitor_destroy(monitor_tag *m) {
   pthread_mutex_destroy(&m->mut);
   pthread_cond_destroy(&m->cond);
   free(m);

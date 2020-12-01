@@ -13,11 +13,11 @@ RUSTC=rustc
 RUSTC_FLAGS=-g --deny warnings
 
 CPP_BINS=bin/cpp/cc_lab01 \
-				 bin/cpp/cc_lab02_a bin/cpp/cc_lab02_b \
-				 bin/cpp/cc_lab03_a bin/cpp/cc_lab03_b \
-				 bin/cpp/cc_lab04 \
-				 bin/cpp/cc_lab05_a bin/cpp/cc_lab05_b \
-				 bin/cpp/cc_lab06
+			 bin/cpp/cc_lab02_a bin/cpp/cc_lab02_b \
+			 bin/cpp/cc_lab03_a bin/cpp/cc_lab03_b \
+			 bin/cpp/cc_lab04 \
+			 bin/cpp/cc_lab05_a bin/cpp/cc_lab05_b \
+			 bin/cpp/cc_lab06
 
 C_BINS=bin/c/c_lab01 \
 			 bin/c/c_lab02_a bin/c/c_lab02_b \
@@ -43,10 +43,10 @@ all: $(C_BINS) $(R_BINS) $(CPP_BINS)
 bin/c/c_lab01: c/c_lab01.c
 	mkdir -p bin/c && $(CC) $(C_FLAGS) -o $@ $^
 
-bin/c/c_lab07_ipc_shm_w: c/ipc/memory_based/shared_memory/write.c c/ipc/include/types.h shared_object.txt
+bin/c/c_lab07_ipc_shm_w: c/ipc/memory_based/shared_memory/write.c c/ipc/include/shm_type.h shared_object.txt
 	mkdir -p bin/c && $(CC) $(C_FLAGS) -Ic/ipc/include -o $@ $< -lpthread
 
-bin/c/c_lab07_ipc_shm_r: c/ipc/memory_based/shared_memory/read.c c/ipc/include/types.h shared_object.txt
+bin/c/c_lab07_ipc_shm_r: c/ipc/memory_based/shared_memory/read.c c/ipc/include/shm_type.h shared_object.txt
 	mkdir -p bin/c && $(CC) $(C_FLAGS) -Ic/ipc/include -o $@ $< -lpthread
 
 bin/c/c_lab07_ipc_socket_server: c/ipc/message_passing/socket/server.c c/ipc/include/common.h

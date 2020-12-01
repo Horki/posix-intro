@@ -8,7 +8,7 @@
 #include <sys/stat.h>  // S_IRUSR, S_IWUSR, fstat, struct stat
 #include <unistd.h>    // getcwd, close
 
-#include "types.h"
+#include "shm_type.h"
 
 sem_t *sem_one, *sem_two;
 static void init_semaphores();
@@ -25,8 +25,9 @@ int main() {
   puts("Write process to shared buffer");
   puts("run ./bin/c/c_lab07_ipc_shm_r");
   // SIGINT handler
-  if (catch_signal(SIGINT, close_write) == -1)
+  if (catch_signal(SIGINT, close_write) == -1) {
     ERROR_MSG("Can't map the handler");
+  }
 
   init_semaphores();
   create_mapping();
@@ -50,16 +51,22 @@ static void init_semaphores() {
                           O_CREAT,            // Flags
                           S_IRUSR | S_IWUSR,  // Permission
                           0                   // Value
-                          )) == SEM_FAILED)
+                          )) == SEM_FAILED) {
     ERROR_MSG("Error init semaphore one");
+  }
   if ((sem_two = sem_open(SEM_TWO_NAME, O_CREAT, S_IRUSR | S_IWUSR, 0)) ==
-      SEM_FAILED)
+      SEM_FAILED) {
     ERROR_MSG("Error init semaphore two");
+  }
 }
 
 static void close_semaphores() {
-  if (sem_close(sem_one) != 0) ERROR_MSG("Error closing Semaphore one");
-  if (sem_close(sem_two) != 0) ERROR_MSG("Error closing Semaphore two");
+  if (sem_close(sem_one) != 0) {
+    ERROR_MSG("Error closing Semaphore one");
+  }
+  if (sem_close(sem_two) != 0) {
+    ERROR_MSG("Error closing Semaphore two");
+  }
   // Write (main) process in unlinking semaphores
   sem_unlink(SEM_ONE_NAME);
   sem_unlink(SEM_TWO_NAME);
@@ -75,7 +82,9 @@ static void create_mapping() {
             S_IRUSR | S_IWUSR  // Access permissions
   );
 
-  if (fstat(fd, &sb) == -1) ERROR_MSG("Missing File");
+  if (fstat(fd, &sb) == -1) {
+    ERROR_MSG("Missing File");
+  }
 
   c = mmap(NULL,                    // Address space of process
            FILE_LEN,                // Block size in memory (bytes)
