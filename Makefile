@@ -38,54 +38,52 @@ R_BINS=bin/rust/r_lab01 \
 			 bin/rust/r_lab05_a bin/rust/r_lab05_b \
 			 bin/rust/r_lab06
 
-DIRS=c cpp rust
+all: dirs $(C_BINS) $(R_BINS) $(CPP_BINS)
 
-all: $(C_BINS) $(R_BINS) $(CPP_BINS)
-
-bin/%: $(DIRS)
+dirs:
 	mkdir -p bin/{c,cpp,rust}
 
-bin/c/c_lab01: c/c_lab01.c bin/c
-	$(CC) $(C_FLAGS) -o $@ $<
+bin/c/c_lab01: c/c_lab01.c
+	$(CC) $(C_FLAGS) -o $@ $^
 
-bin/c/c_lab07_ipc_shm_w: c/ipc/memory_based/shared_memory/write.c c/ipc/include/shm_type.h shared_object.txt bin/c
+bin/c/c_lab07_ipc_shm_w: c/ipc/memory_based/shared_memory/write.c c/ipc/include/shm_type.h shared_object.txt
 	$(CC) $(C_FLAGS) -Ic/ipc/include -o $@ $< -lpthread
 
-bin/c/c_lab07_ipc_shm_r: c/ipc/memory_based/shared_memory/read.c c/ipc/include/shm_type.h shared_object.txt bin/c
+bin/c/c_lab07_ipc_shm_r: c/ipc/memory_based/shared_memory/read.c c/ipc/include/shm_type.h shared_object.txt
 	$(CC) $(C_FLAGS) -Ic/ipc/include -o $@ $< -lpthread
 
-bin/c/c_lab07_ipc_socket_server: c/ipc/message_passing/socket/server.c c/ipc/include/common.h bin/c
+bin/c/c_lab07_ipc_socket_server: c/ipc/message_passing/socket/server.c c/ipc/include/common.h
 	$(CC) $(C_FLAGS) -Ic/ipc/include -o $@ $<
 
-bin/c/c_lab07_ipc_socket_client: c/ipc/message_passing/socket/client.c c/ipc/include/common.h bin/c
+bin/c/c_lab07_ipc_socket_client: c/ipc/message_passing/socket/client.c c/ipc/include/common.h
 	$(CC) $(C_FLAGS) -Ic/ipc/include -o $@ $<
 
-bin/c/c_lab07_ipc_mq_write: c/ipc/message_passing/message_queue/write.c c/ipc/include/type.h bin/c
+bin/c/c_lab07_ipc_mq_write: c/ipc/message_passing/message_queue/write.c c/ipc/include/type.h
 	$(CC) $(C_FLAGS) -Ic/ipc/include -o $@ $<
 
-bin/c/c_lab07_ipc_mq_read: c/ipc/message_passing/message_queue/read.c c/ipc/include/type.h bin/c
+bin/c/c_lab07_ipc_mq_read: c/ipc/message_passing/message_queue/read.c c/ipc/include/type.h
 	$(CC) $(C_FLAGS) -Ic/ipc/include -o $@ $<
 
-bin/c/c_lab07_ipc_pipe: c/ipc/message_passing/pipe/twowaypipe.c bin/c
-	$(CC) $(C_FLAGS) -o $@ $<
+bin/c/c_lab07_ipc_pipe: c/ipc/message_passing/pipe/twowaypipe.c
+	$(CC) $(C_FLAGS) -o $@ $^
 
 shared_object.txt:
 	echo "" > $@
 
-bin/cpp/cc_lab01: cpp/cc_lab01.cc bin/cpp
-	$(CPP) $(CPP_FLAGS) -o $@ $<
+bin/cpp/cc_lab01: cpp/cc_lab01.cc
+	$(CPP) $(CPP_FLAGS) -o $@ $^
 
-bin/cpp/cc_lab05_b: cpp/cc_lab05_b.cc cpp/include/buffer.hh bin/cpp
+bin/cpp/cc_lab05_b: cpp/cc_lab05_b.cc cpp/include/buffer.hh
 	$(CPP) $(CPP_FLAGS) -Icpp/include -o $@ $< -pthread
 
-bin/cpp/%: cpp/%.cc bin/cpp
-	$(CPP) $(CPP_FLAGS) -Icpp/include -o $@ $< -pthread
+bin/cpp/%: cpp/%.cc
+	$(CPP) $(CPP_FLAGS) -Icpp/include -o $@ $^ -pthread
 
-bin/c/%: c/%.c bin/c
-	$(CC) $(C_FLAGS) -Ic/include -o $@ $< -lpthread
+bin/c/%: c/%.c
+	$(CC) $(C_FLAGS) -Ic/include -o $@ $^ -lpthread
 
-bin/rust/%: rust/%.rs bin/rust
-	rustup run stable $(RUSTC) $(RUSTC_FLAGS) -o $@ $<
+bin/rust/%: rust/%.rs
+	rustup run stable $(RUSTC) $(RUSTC_FLAGS) -o $@ $^
 
 format:
 	rustfmt rust/*.rs && clang-format cpp/*.cc cpp/include/*.hh c/*.c \
