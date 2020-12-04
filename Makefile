@@ -70,8 +70,8 @@ bin/c/c_lab07_ipc_pipe: c/ipc/message_passing/pipe/twowaypipe.c
 shared_object.txt:
 	echo "" > $@
 
-bin/cpp/cc_lab01: cpp/cc_lab01.cc
-	$(CPP) $(CPP_FLAGS) -o $@ $^
+bin/cpp/cc_lab01: cpp/cc_lab01.cc cpp/include/custom_exception.hh
+	$(CPP) $(CPP_FLAGS) -Icpp/include -o $@ $<
 
 bin/cpp/cc_lab05_b: cpp/cc_lab05_b.cc cpp/include/buffer.hh
 	$(CPP) $(CPP_FLAGS) -Icpp/include -o $@ $< -pthread
