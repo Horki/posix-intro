@@ -4,7 +4,7 @@
 #include <cerrno>   // errno
 #include <cstring>  // strerror
 #include <iostream>
-#include <string_view>
+#include <string>
 
 struct Exc {
  protected:
