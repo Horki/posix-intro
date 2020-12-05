@@ -9,7 +9,7 @@
 namespace Custom {
 using Iter = std::ostream_iterator<int>;
 
-template <int N, int M>
+template <std::size_t N, std::size_t M>
 class Matrix {
  private:
   std::array<int, N * M> arr;
