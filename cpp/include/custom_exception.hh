@@ -6,31 +6,34 @@
 #include <iostream>
 #include <string>
 
-struct Exc {
+class BaseExcInterface {
+ public:
+  virtual std::string what() const = 0;
+  virtual ~BaseExcInterface() {}
+};
+
+class Exc : public BaseExcInterface {
  protected:
   std::string msg;
 
  public:
   Exc(const std::string& msg) : msg{msg} {}
+
+  std::string what() const { return msg + ":" + strerror(errno); }
 };
 
-class BaseExcInterface {
- public:
-  virtual std::string what() const = 0;
-};
-
-class PIDException : public Exc, BaseExcInterface {
+class PIDException : public Exc {
  public:
   PIDException(const std::string& msg) : Exc{msg} {}
 
-  std::string what() const { return "PID: " + msg + ":" + strerror(errno); }
+  std::string what() const { return "PID: " + Exc::what(); }
 };
 
-class OpenException : public Exc, BaseExcInterface {
+class OpenException : public Exc {
  public:
   OpenException(const std::string& msg) : Exc{msg} {}
 
-  std::string what() const { return "Open: " + msg + ":" + strerror(errno); }
+  std::string what() const { return "Open: " + Exc::what(); }
 };
 
 #endif
