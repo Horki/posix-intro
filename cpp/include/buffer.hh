@@ -42,7 +42,7 @@ class IBuffer {
 };
 IBuffer::~IBuffer() {}
 
-template <size_t BUFFER_LEN>
+template <std::size_t BUFFER_LEN>
 class SemaphoreBuffer : public IBuffer {
  private:
   size_t producer_idx, consumer_idx;
@@ -50,7 +50,7 @@ class SemaphoreBuffer : public IBuffer {
   sem_t sem_full, sem_empty, sem_lock;
 
  public:
-  SemaphoreBuffer() : producer_idx(0), consumer_idx(0) {
+  SemaphoreBuffer() : producer_idx{0}, consumer_idx{0} {
     // 0 = Semaphore is shared between threads of process
     int p_shared = 0;
     if (sem_init(&sem_full, p_shared, 0) != 0) {

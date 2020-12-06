@@ -15,7 +15,7 @@ pid_t create_fork() noexcept(false);
 
 int main() {
   try {
-    pid_t pid = create_fork();
+    pid_t pid{create_fork()};
     if (!pid) {
       // child process
       execute_child(pid);
@@ -55,7 +55,7 @@ void wait_child(pid_t &pid) noexcept(false) {
 }
 
 pid_t create_fork() noexcept(false) {
-  pid_t pid = fork();
+  pid_t pid{fork()};
   if (pid == -1) {
     throw new PIDException("Can't fork process");
   }

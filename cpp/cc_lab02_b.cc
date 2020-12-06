@@ -1,5 +1,6 @@
 #include <algorithm>  // copy
 #include <array>      // array
+#include <cassert>    // assert
 #include <iostream>   // cout
 #include <iterator>   // ostream_iterator
 #include <numeric>    // iota
@@ -18,12 +19,18 @@ class Matrix {
 
  public:
   Matrix() : n(N), m(M) {
+    assert(n > 0);
+    assert(m > 0);
     for (int i = 0; i < n; ++i) {
       std::iota(arr.begin() + (m * i), arr.begin() + ((m * i) + m), 1);
     }
   }
 
-  Matrix(int val) : n(N), m(M) { std::fill(arr.begin(), arr.end(), val); }
+  Matrix(const int val) : n(N), m(M) {
+    assert(n > 0);
+    assert(m > 0);
+    std::fill(arr.begin(), arr.end(), val);
+  }
 
   constexpr int const &operator()(const std::size_t x,
                                   const std::size_t y) const {
@@ -62,16 +69,18 @@ int main() {
     std::cout << a;
     std::cout << "B: " << std::endl;
     std::cout << b;
-    for (std::size_t row = 0; row < rows; ++row) {
-      threads.push_back(std::thread([&, row] {
-        for (std::size_t col = 0; col < cols; ++col) {
-          res(row, col) += a(row, col) + b(row, col);
+    for (std::size_t row{0}; row < rows; ++row) {
+      threads.push_back(std::thread([&, columns = cols, current_row = row] {
+        for (std::size_t col{0}; col < columns; ++col) {
+          res(current_row, col) += a(current_row, col) + b(current_row, col);
         }
       }));
     }
     std::cout << "wait for join threads" << std::endl;
-    for (auto &thread : threads) {
-      thread.join();
+    for (auto &t : threads) {
+      if (t.joinable()) {
+        t.join();
+      }
     }
     std::cout << "result: " << std::endl;
     std::cout << res;
