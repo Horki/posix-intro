@@ -1,14 +1,15 @@
 #include <errno.h>
 #include <pthread.h>
-#include <semaphore.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
+#include "posix_semaphore.h"
+
 #define NO_TH 5
 
-static sem_t sem_bin;
+static struct rk_sema sem_bin;
 static pthread_t threads[NO_TH];
 
 static void *airplanes(void *);
@@ -48,11 +49,11 @@ static void wait_threads() {
 static void *airplanes(void *a) {
   const int32_t n = (*(int32_t *)a) + 1;
   printf("Airplane %d => Control tower: permission to land\n", n);
-  sem_wait(&sem_bin);
+  rk_sema_wait(&sem_bin);
   printf("Control tower => Airplane %d: Permission granted\n", n);
   printf("Airplane %d => Control tower: I have landed to runway\n", n);
   puts("Control tower => everyone: Runway is available");
-  sem_post(&sem_bin);
+  rk_sema_post(&sem_bin);
 
   return NULL;
 }
@@ -60,10 +61,10 @@ static void *airplanes(void *a) {
 static void init_semaphore() {
   // init (binary|lock semaphore) with shared between threads of process
   // 1 is for unlocked state
-  if (sem_init(&sem_bin, 0, 1) != 0) error_msg("Error init binary semaphore");
+  if (rk_sema_init(&sem_bin, 0, 1) != 0) error_msg("Error init binary semaphore");
 }
 
 static void close_semaphore() {
-  if (sem_destroy(&sem_bin) != 0)
+  if (rk_sema_destroy(&sem_bin) != 0)
     error_msg("Error destroying binary semaphore");
 }

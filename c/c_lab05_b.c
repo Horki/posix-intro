@@ -1,6 +1,5 @@
 #include <errno.h>
 #include <pthread.h>
-#include <semaphore.h>
 #include <signal.h>
 #include <stdbool.h>
 #include <stdint.h>
@@ -9,6 +8,8 @@
 #include <string.h>
 #include <time.h>
 #include <unistd.h>
+
+#include "posix_semaphore.h"
 
 // Signals
 // static void sig_int(int);
@@ -32,7 +33,7 @@ static const char *print_item(int32_t);
 
 // Threads, Semaphores
 #define NO_TH 5
-static sem_t sem_full, sem_empty, sem_lock;
+static struct rk_sema sem_full, sem_empty, sem_lock;
 static pthread_t threads[NO_TH];
 static void wait_threads();
 static void init_semaphores();
@@ -84,8 +85,8 @@ static void *producer(void *a) {
   int32_t item;
   while (true) {
     item = produce();  // generate item to put in buffer
-    sem_wait(&sem_empty);
-    sem_wait(&sem_lock);
+    rk_sema_wait(&sem_empty);
+    rk_sema_wait(&sem_lock);
 
     add_to_buffer(item);
     print_buffer();
@@ -93,8 +94,8 @@ static void *producer(void *a) {
            print_item(item));
     sleep(1);
 
-    sem_post(&sem_lock);
-    sem_post(&sem_full);
+    rk_sema_post(&sem_lock);
+    rk_sema_post(&sem_full);
   }
   return NULL;
 }
@@ -104,8 +105,8 @@ static void *consumer(void *a) {
   int32_t item;
 
   while (true) {
-    sem_wait(&sem_full);
-    sem_wait(&sem_lock);
+    rk_sema_wait(&sem_full);
+    rk_sema_wait(&sem_lock);
 
     item = remove_from_buffer();
     print_buffer();
@@ -113,8 +114,8 @@ static void *consumer(void *a) {
            print_item(item));
     sleep(1);
 
-    sem_post(&sem_lock);
-    sem_post(&sem_empty);
+    rk_sema_post(&sem_lock);
+    rk_sema_post(&sem_empty);
 
     consume(consumer_id, item);
   }
@@ -176,15 +177,15 @@ static int32_t remove_from_buffer() {
 static void init_semaphores() {
   // 0 = Semaphore is shared between threads of process
   int32_t p_shared = 0;
-  sem_init(&sem_full, p_shared, 0);
-  sem_init(&sem_empty, p_shared, BUFFER_LEN);
-  sem_init(&sem_lock, p_shared, 1);
+  rk_sema_init(&sem_full, p_shared, 0);
+  rk_sema_init(&sem_empty, p_shared, BUFFER_LEN);
+  rk_sema_init(&sem_lock, p_shared, 1);
 }
 
 static void close_semaphores() {
-  sem_destroy(&sem_full);
-  sem_destroy(&sem_empty);
-  sem_destroy(&sem_lock);
+  rk_sema_destroy(&sem_full);
+  rk_sema_destroy(&sem_empty);
+  rk_sema_destroy(&sem_lock);
 }
 
 // static void sig_int(int signo) {

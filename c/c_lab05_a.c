@@ -6,12 +6,12 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "init_sem.h"
+#include "posix_semaphore.h"
 
 #define NO_TH 2
 #define MAX_N 30
 
-static sem_t sem_even, sem_odd;
+static struct rk_sema sem_even, sem_odd;
 static pthread_t threads[NO_TH];
 static int32_t counter = 1;
 
@@ -51,10 +51,10 @@ static void error_msg(const char* m) {
 static void* print_odd(void* a) {
   bool end = false;
   do {
-    sem_wait(&sem_odd);
+    rk_sema_wait(&sem_odd);
     printf("Odd number is %d\n", counter++);
     if (counter >= MAX_N) end = true;
-    sem_post(&sem_even);
+    rk_sema_post(&sem_even);
   } while (!end);
 
   return NULL;
@@ -63,10 +63,10 @@ static void* print_odd(void* a) {
 static void* print_even(void* a) {
   bool end = false;
   do {
-    sem_wait(&sem_even);
+    rk_sema_wait(&sem_even);
     printf("Even number is %d\n", counter++);
     if (counter >= MAX_N) end = true;
-    sem_post(&sem_odd);
+    rk_sema_post(&sem_odd);
   } while (!end);
 
   return NULL;
@@ -76,16 +76,16 @@ static void init_semaphores() {
   // 0 = Semaphore is shared between threads of process
   int32_t p_shared = 0;
   // 1 unlocked for 'odd' semaphore
-  if (sem_init(&sem_odd, p_shared, 1) != 0)
+  if (rk_sema_init(&sem_odd, p_shared, 1) != 0)
     error_msg("Error init semaphore for odd lock");
   // 0 locked for 'even' semaphore
-  if (sem_init(&sem_even, p_shared, 0) != 0)
+  if (rk_sema_init(&sem_even, p_shared, 0) != 0)
     error_msg("Error init semaphore for even lock");
 }
 
 static void close_semaphores() {
-  if (sem_destroy(&sem_odd) != 0)
+  if (rk_sema_destroy(&sem_odd) != 0)
     error_msg("Error destroying Semaphore odd lock");
-  if (sem_destroy(&sem_even) != 0)
+  if (rk_sema_destroy(&sem_even) != 0)
     error_msg("Error destroying Semaphore even lock");
 }

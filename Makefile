@@ -46,6 +46,9 @@ dirs:
 bin/c/c_lab01: c/c_lab01.c
 	$(CC) $(C_FLAGS) -o $@ $^
 
+bin/c/c_lab05_a: c/c_lab05_a.c c/include/posix_semaphore.h
+	$(CC) $(C_FLAGS) -Ic/include -o $@ $< -lpthread
+
 bin/c/c_lab07_ipc_shm_w: c/ipc/memory_based/shared_memory/write.c c/ipc/include/shm_type.h shared_object.txt
 	$(CC) $(C_FLAGS) -Ic/ipc/include -o $@ $< -lpthread
 
