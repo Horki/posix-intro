@@ -29,7 +29,7 @@ class Matrix {
   Matrix(const int val) : n(N), m(M) {
     assert(n > 0);
     assert(m > 0);
-    std::fill(arr.begin(), arr.end(), val);
+    arr.fill(val);
   }
 
   constexpr int const &operator()(const std::size_t x,
@@ -41,9 +41,9 @@ class Matrix {
     return arr.at(x * m + y);
   }
 
-  constexpr std::size_t rows() const { return n; }
+  constexpr std::size_t const rows() const { return n; }
 
-  constexpr std::size_t cols() const { return m; }
+  constexpr std::size_t const cols() const { return m; }
 
   friend std::ostream &operator<<(std::ostream &os, const Matrix<N, M> &m) {
     for (int i = 0; i < m.rows(); ++i) {
@@ -60,11 +60,15 @@ int main() {
   try {
     constexpr std::size_t rows{15};
     constexpr std::size_t cols{15};
-    std::vector<std::thread> threads;
-    threads.reserve(rows);
+    std::vector<std::thread> threads(rows);
+
     Custom::Matrix<rows, cols> a;
     Custom::Matrix<rows, cols> b(2000);
     Custom::Matrix<rows, cols> res(0);
+    {
+      assert(a.cols() == b.cols() && a.rows() == b.rows());
+      assert(a.cols() == res.cols() && a.rows() == res.rows());
+    }
     std::cout << "A:" << std::endl;
     std::cout << a;
     std::cout << "B: " << std::endl;
