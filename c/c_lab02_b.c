@@ -27,8 +27,9 @@ int main() {
   for (int32_t i = 0; i < N; ++i) {
     thread_no[i] = i;
     if (pthread_create(&threads[i], NULL, calculate_row,
-                       (void *)&thread_no[i]) != 0)
+                       (void *)&thread_no[i]) != 0) {
       error_msg("Can't create thread");
+    }
   }
 
   wait_threads();
@@ -43,7 +44,9 @@ static void *calculate_row(void *d) {
   int32_t row = *(int32_t *)d;
   printf("Calculating in %d. thread!\n", row + 1);
   // Calculate one matrix row
-  for (int32_t j = 0; j < N; ++j) res[row][j] = a[row][j] + b[row][j];
+  for (int32_t j = 0; j < N; ++j) {
+    res[row][j] = a[row][j] + b[row][j];
+  }
 
   printf("Calculated in %d. thread! DONE!\n", row + 1);
 
@@ -61,8 +64,10 @@ static void init() {
 
 static void print_matrix(int32_t mat[][N]) {
   for (int32_t i = 0; i < N; ++i) {
-    for (int32_t j = 0; j < N; ++j) printf("%d ", mat[i][j]);
-    printf("\n");
+    for (int32_t j = 0; j < N; ++j) {
+      printf("%d ", mat[i][j]);
+    }
+    putc('\n');
   }
 }
 
@@ -72,6 +77,9 @@ static void error_msg(const char *m) {
 }
 
 static void wait_threads() {
-  for (int32_t i = 0; i < N; ++i)
-    if (pthread_join(threads[i], NULL) != 0) error_msg("Can't join thread t");
+  for (int32_t i = 0; i < N; ++i) {
+    if (pthread_join(threads[i], NULL) != 0) {
+      error_msg("Can't join thread t");
+    }
+  }
 }

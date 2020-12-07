@@ -64,7 +64,9 @@ static void *my_malloc(size_t size) {
   my_heap **current = NULL;
   my_heap *p = find_heap(size);
 
-  if (p == NULL) return NULL;
+  if (p == NULL) {
+    return NULL;
+  }
 
   tmp = (char *)mmap(p->p, p->maxSize, PROT_READ | PROT_WRITE,
                      MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);

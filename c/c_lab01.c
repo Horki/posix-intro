@@ -12,7 +12,9 @@ static void wait_child(pid_t);
 
 int main() {
   pid_t pid = fork();
-  if (pid == -1) error_msg("Can't fork process");
+  if (pid == -1) {
+    error_msg("Can't fork process");
+  }
 
   if (!pid) {
     // child process
@@ -27,17 +29,23 @@ int main() {
 }
 
 static void execute_child(pid_t ppid) {
-  if (ppid) error_msg("Not a child process!");
+  if (ppid) {
+    error_msg("Not a child process!");
+  }
   printf("Waiting to close child process (gedit[pid=%d])\n", getpid());
-  if (execl("/usr/bin/gedit", "gedit", NULL) != -1)
+  if (execl("/usr/bin/gedit", "gedit", NULL) != -1) {
     error_msg("Can't open gedit");
+  }
 }
 
 static void wait_child(pid_t pid) {
-  if (!pid) error_msg("Not a parent process!");
+  if (!pid) {
+    error_msg("Not a parent process!");
+  }
   int pid_status;
-  if (waitpid(pid, &pid_status, 0) == -1)
+  if (waitpid(pid, &pid_status, 0) == -1) {
     error_msg("Error waiting child process");
+  }
 
   printf("Child exited with exit code: %d\n", pid_status);
 }

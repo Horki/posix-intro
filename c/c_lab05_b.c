@@ -64,8 +64,9 @@ int main() {
   for (size_t i = 0; i < n_producers; ++i) {
     thread_no[i] = i;
     if (pthread_create(&threads[i], NULL, producer, (void *)&thread_no[i]) ==
-        -1)
+        -1) {
       error_msg("Can't create threads for producers (trucks)");
+    }
   }
   for (size_t i = 0; i < n_consumers; ++i) {
     thread_no[i] = i;

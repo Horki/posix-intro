@@ -25,8 +25,9 @@ int main() {
   for (int32_t i = 0; i < NO_TH; ++i) {
     thread_no[i] = i;
     if (pthread_create(&threads[i], NULL, airplanes, (void *)&thread_no[i]) !=
-        0)
+        0) {
       error_msg("Error creating thread for airplanes");
+    }
   }
 
   wait_threads();
@@ -41,9 +42,11 @@ static void error_msg(const char *m) {
 }
 
 static void wait_threads() {
-  for (int32_t i = 0; i < NO_TH; ++i)
-    if (pthread_join(threads[i], NULL) != 0)
+  for (int32_t i = 0; i < NO_TH; ++i) {
+    if (pthread_join(threads[i], NULL) != 0) {
       error_msg("unable to join threads");
+    }
+  }
 }
 
 static void *airplanes(void *a) {
@@ -61,10 +64,13 @@ static void *airplanes(void *a) {
 static void init_semaphore() {
   // init (binary|lock semaphore) with shared between threads of process
   // 1 is for unlocked state
-  if (rk_sema_init(&sem_bin, 0, 1) != 0) error_msg("Error init binary semaphore");
+  if (rk_sema_init(&sem_bin, 0, 1) != 0) {
+    error_msg("Error init binary semaphore");
+  }
 }
 
 static void close_semaphore() {
-  if (rk_sema_destroy(&sem_bin) != 0)
+  if (rk_sema_destroy(&sem_bin) != 0) {
     error_msg("Error destroying binary semaphore");
+  }
 }

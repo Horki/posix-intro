@@ -23,12 +23,14 @@ int main() {
   int32_t thread_no[NO_TH];
   for (int32_t i = 0; i < NO_TH;) {
     thread_no[i] = i;
-    if (pthread_create(&threads[i], NULL, func1, (void *)&thread_no[i]) != 0)
+    if (pthread_create(&threads[i], NULL, func1, (void *)&thread_no[i]) != 0) {
       error_msg("Error creating thread for func1");
+    }
     ++i;
     thread_no[i] = i;
-    if (pthread_create(&threads[i], NULL, func2, (void *)&thread_no[i]) != 0)
+    if (pthread_create(&threads[i], NULL, func2, (void *)&thread_no[i]) != 0) {
       error_msg("Error creating thread for func2");
+    }
     ++i;
   }
 
@@ -40,8 +42,9 @@ int main() {
 static void *func1(void *a) {
   const int32_t n = *(int32_t *)a;
   pthread_mutex_lock(&mut);
-  for (int32_t i = 0; i < N_MAX; ++i)
+  for (int32_t i = 0; i < N_MAX; ++i) {
     printf("Function 1 = %d; Thread %d\n", counter++, n + 1);
+  }
   pthread_mutex_unlock(&mut);
 
   return NULL;
@@ -50,8 +53,9 @@ static void *func1(void *a) {
 static void *func2(void *a) {
   const int32_t n = *(int32_t *)a;
   pthread_mutex_lock(&mut);
-  for (int32_t i = 0; i < N_MAX; ++i)
+  for (int32_t i = 0; i < N_MAX; ++i) {
     printf("Function 2 = %d; Thread %d\n", counter++, n + 1);
+  }
   pthread_mutex_unlock(&mut);
 
   return NULL;
@@ -64,7 +68,9 @@ static void error_msg(const char *m) {
 }
 
 static void wait_threads() {
-  for (int32_t i = 0; i < NO_TH; ++i)
-    if (pthread_join(threads[i], NULL) != 0)
+  for (int32_t i = 0; i < NO_TH; ++i) {
+    if (pthread_join(threads[i], NULL) != 0) {
       error_msg("Unable to join threads");
+    }
+  }
 }

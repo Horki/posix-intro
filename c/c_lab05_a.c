@@ -25,11 +25,13 @@ static void close_semaphores();
 int main() {
   init_semaphores();
 
-  if (pthread_create(&threads[0], NULL, print_odd, NULL) != 0)
+  if (pthread_create(&threads[0], NULL, print_odd, NULL) != 0) {
     error_msg("Error creating thread for print_odd");
+  }
 
-  if (pthread_create(&threads[1], NULL, print_even, NULL) != 0)
+  if (pthread_create(&threads[1], NULL, print_even, NULL) != 0) {
     error_msg("Error creating thread for print_even");
+  }
 
   wait_threads();
   close_semaphores();
@@ -38,9 +40,11 @@ int main() {
 }
 
 static void wait_threads() {
-  for (int32_t i = 0; i < NO_TH; ++i)
-    if (pthread_join(threads[i], NULL) != 0)
+  for (int32_t i = 0; i < NO_TH; ++i) {
+    if (pthread_join(threads[i], NULL) != 0) {
       error_msg("Unable to join threads");
+    }
+  }
 }
 
 static void error_msg(const char* m) {
@@ -76,16 +80,20 @@ static void init_semaphores() {
   // 0 = Semaphore is shared between threads of process
   int32_t p_shared = 0;
   // 1 unlocked for 'odd' semaphore
-  if (rk_sema_init(&sem_odd, p_shared, 1) != 0)
+  if (rk_sema_init(&sem_odd, p_shared, 1) != 0) {
     error_msg("Error init semaphore for odd lock");
+  }
   // 0 locked for 'even' semaphore
-  if (rk_sema_init(&sem_even, p_shared, 0) != 0)
+  if (rk_sema_init(&sem_even, p_shared, 0) != 0) {
     error_msg("Error init semaphore for even lock");
+  }
 }
 
 static void close_semaphores() {
-  if (rk_sema_destroy(&sem_odd) != 0)
+  if (rk_sema_destroy(&sem_odd) != 0) {
     error_msg("Error destroying Semaphore odd lock");
-  if (rk_sema_destroy(&sem_even) != 0)
+  }
+  if (rk_sema_destroy(&sem_even) != 0) {
     error_msg("Error destroying Semaphore even lock");
+  }
 }

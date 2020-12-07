@@ -20,8 +20,9 @@ int main() {
   int32_t thread_no[NO_TH];
   for (int32_t i = 0; i < NO_TH; ++i) {
     thread_no[i] = i;
-    if (pthread_create(&threads[i], NULL, func, (void *)&thread_no[i]) != 0)
+    if (pthread_create(&threads[i], NULL, func, (void *)&thread_no[i]) != 0) {
       error_msg("Error creating thread for func");
+    }
   }
 
   wait_threads();
@@ -61,7 +62,9 @@ static void *func(void *a) {
 }
 
 static void wait_threads() {
-  for (int32_t i = 0; i < NO_TH; ++i)
-    if (pthread_join(threads[i], NULL) != 0)
+  for (int32_t i = 0; i < NO_TH; ++i) {
+    if (pthread_join(threads[i], NULL) != 0) {
       error_msg("Unable to join threads");
+    }
+  }
 }

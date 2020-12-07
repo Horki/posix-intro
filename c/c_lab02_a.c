@@ -45,9 +45,13 @@ static void wait_thread() {
 // Expensive operation O(n^3)
 static void *calculate(void *a) {
   struct data_s *res = (struct data_s *)a;
-  for (int32_t i = 1; i <= res->a; i++)
-    for (int32_t j = 1; j <= res->b; j++)
-      for (int32_t k = 1; k <= res->c; k++) res->total += i * j * k;
+  for (int32_t i = 1; i <= res->a; i++) {
+    for (int32_t j = 1; j <= res->b; j++) {
+      for (int32_t k = 1; k <= res->c; k++) {
+        res->total += i * j * k;
+      }
+    }
+  }
 
   puts("Thread finished");
 
