@@ -1,37 +1,33 @@
-#include <buffer.hh>
 #include <cassert>
 #include <iostream>
 #include <thread>
 #include <vector>
 
-static constexpr size_t NO_TH = 5;
-static void wait_threads(std::vector<std::thread> &);
+#include "buffer.hh"
 
 int main() {
-  std::cout << "Warehouse schema\n";
-  std::cout << "\t0 Empty slot\n";
-  std::cout << "\t* Taken slot\n";
-  std::cout << "\t+ Recently taken by worker\n\n";
-  std::vector<std::thread> threads(NO_TH);
+  constexpr std::size_t no_th{5};
+  constexpr std::size_t n_producers{3};
+  constexpr std::size_t n_consumers{2};
+  assert((n_producers + n_consumers) == no_th);
+  std::vector<std::thread> threads(no_th);
   SemaphoreBuffer<10> buff;
-  size_t n_producers = 3;
-  size_t n_consumers = 2;
-  assert((n_producers + n_consumers) == NO_TH);
+
+  std::cout << "Warehouse schema" << std::endl;
+  std::cout << "\t0 Empty slot" << std::endl;
+  std::cout << "\t* Taken slot" << std::endl;
+  std::cout << "\t+ Recently taken by worker" << std::endl << std::endl;
   std::cout << "Number of trucks  (producers): " << n_producers << std::endl;
   std::cout << "Number of workers (consumers): " << n_consumers << std::endl;
 
-  for (size_t i = 0; i < n_producers; ++i) {
-    std::thread t([&] { buff.producer(i + 1); });
-    threads.push_back(std::move(t));
+  for (std::size_t i = 0; i < n_producers; ++i) {
+    threads.push_back(std::thread(
+        [&b = buff, producer_id = i + 1] { b.producer(producer_id); }));
   }
-  for (size_t i = 0; i < n_consumers; ++i) {
-    std::thread t([&] { buff.consumer(i + 1); });
-    threads.push_back(std::move(t));
+  for (std::size_t i = 0; i < n_consumers; ++i) {
+    threads.push_back(std::thread(
+        [&b = buff, consumer_id = i + 1] { b.consumer(consumer_id); }));
   }
-  wait_threads(threads);
-}
-
-void wait_threads(std::vector<std::thread> &threads) {
   for (auto &t : threads) {
     if (t.joinable()) {
       t.join();

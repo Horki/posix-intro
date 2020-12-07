@@ -15,7 +15,8 @@ struct rk_sema {
 #endif
 };
 
-static inline int rk_sema_init(struct rk_sema *s, int32_t shared, uint32_t value) {
+static inline int rk_sema_init(struct rk_sema *s, int32_t shared,
+                               uint32_t value) {
 #ifdef __APPLE__
   dispatch_semaphore_t *sem = &s->sem;
 
