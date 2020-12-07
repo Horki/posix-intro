@@ -10,6 +10,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+
 struct rk_sema {
 #ifdef __APPLE__
   dispatch_semaphore_t sem;
@@ -17,13 +18,6 @@ struct rk_sema {
   sem_t sem;
 #endif
 };
-#ifdef __cplusplus
-}
-#endif
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 static inline int rk_sema_init(struct rk_sema *s, int32_t shared,
                                uint32_t value) {
@@ -37,14 +31,6 @@ static inline int rk_sema_init(struct rk_sema *s, int32_t shared,
 #endif
 }
 
-#ifdef __cplusplus
-}
-#endif
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 static inline void rk_sema_wait(struct rk_sema *s) {
 #ifdef __APPLE__
   dispatch_semaphore_wait(s->sem, DISPATCH_TIME_FOREVER);
@@ -57,14 +43,6 @@ static inline void rk_sema_wait(struct rk_sema *s) {
 #endif
 }
 
-#ifdef __cplusplus
-}
-#endif
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 static inline void rk_sema_post(struct rk_sema *s) {
 #ifdef __APPLE__
   dispatch_semaphore_signal(s->sem);
@@ -72,14 +50,6 @@ static inline void rk_sema_post(struct rk_sema *s) {
   sem_post(&s->sem);
 #endif
 }
-
-#ifdef __cplusplus
-}
-#endif
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 static inline int rk_sema_destroy(struct rk_sema *s) {
 #ifdef __APPLE__
