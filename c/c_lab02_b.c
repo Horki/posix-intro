@@ -67,7 +67,7 @@ static void print_matrix(int32_t mat[][N]) {
     for (int32_t j = 0; j < N; ++j) {
       printf("%d ", mat[i][j]);
     }
-    putc('\n');
+    putchar('\n');
   }
 }
 
