@@ -4,6 +4,8 @@
 #include <thread>    // thread
 #include <vector>    // vector
 
+#include "common.hh" // wait_threads
+
 int main() {
   constexpr std::size_t no_th{10};
   constexpr std::size_t n_max{50};
@@ -23,9 +25,5 @@ int main() {
     threads.push_back(std::thread(func, 1, i++));
     threads.push_back(std::thread(func, 2, i++));
   }
-  for (auto &t : threads) {
-    if (t.joinable()) {
-      t.join();
-    }
-  }
+  wait_threads(threads);
 }
