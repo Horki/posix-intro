@@ -3,33 +3,27 @@
 #include <thread>
 #include <vector>
 
-static constexpr size_t NO_TH = 5;
-std::mutex mut;
-
-void airplanes(const size_t);
-void wait_threads(std::vector<std::thread> &);
+#include "common.hh"  // wait_threads
 
 int main() {
-  std::vector<std::thread> threads(NO_TH);
-  for (size_t i = 0; i < NO_TH; ++i) {
-    threads.push_back(std::thread(airplanes, i + 1));
+  constexpr std::size_t no_th{5};
+  std::mutex mut;
+  std::vector<std::thread> threads(no_th);
+  auto airplanes = [&m = mut](std::size_t const airplane_id) -> void {
+    std::cout << "Airplane " << airplane_id
+              << " => Control tower: permission to land" << std::endl;
+    {
+      std::unique_lock<std::mutex> lock{m};
+      std::cout << "Control tower => Airplane " << airplane_id
+                << ": Permission granted" << std::endl;
+      std::cout << "Airplane " << airplane_id
+                << " => Control tower: I have landed the runway" << std::endl;
+      std::cout << "Control tower => everyone: Runway is available"
+                << std::endl;
+    }  // unlock lock
+  };
+  for (std::size_t i{1}; i <= no_th; ++i) {
+    threads.push_back(std::thread(airplanes, i));
   }
   wait_threads(threads);
-}
-
-void airplanes(const size_t n) {
-  std::cout << "Airplane " << n << " => Control tower: permission to land\n";
-  std::unique_lock<std::mutex> lock(mut);
-  std::cout << "Control tower => Airplane " << n << ": Permission granted\n";
-  std::cout << "Airplane " << n
-            << " => Control tower: I have landed the runway\n";
-  std::cout << "Control tower => everyone: Runway is available\n";
-}
-
-void wait_threads(std::vector<std::thread> &threads) {
-  for (auto &t : threads) {
-    if (t.joinable()) {
-      t.join();
-    }
-  }
 }
