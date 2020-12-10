@@ -4,7 +4,7 @@
 #include <thread>    // thread
 #include <vector>    // vector
 
-#include "common.hh" // wait_threads
+#include "common.hh"  // wait_threads
 
 int main() {
   constexpr std::size_t no_th{10};
