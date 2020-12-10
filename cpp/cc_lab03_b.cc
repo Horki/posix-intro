@@ -33,5 +33,5 @@ int main() {
       }  // unlock mutex
     }));
   }
-  wait_thread(threads);
+  wait_threads(threads);
 }
