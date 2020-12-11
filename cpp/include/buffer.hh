@@ -8,19 +8,20 @@
 #include <string>
 #include <thread>
 
+#include "common.hh"
 #include "posix_semaphore.h"
 
+namespace Custom {
+namespace Posix {
+using sem = struct rk_sema;
+}  // namespace Posix
+
+namespace ProducerConsumer {
 enum Slot {
   EMPTY,
   TAKEN,
   RECENTLY,
 };
-
-namespace Custom {
-namespace Posix {
-using sem_t = struct rk_sema;
-}  // namespace Posix
-}  // namespace Custom
 
 std::ostream &operator<<(std::ostream &os, const Slot &s) {
   switch (s) {
@@ -51,14 +52,14 @@ class IBuffer {
 IBuffer::~IBuffer() {}
 
 template <std::size_t BUFFER_LEN>
-class SemaphoreBuffer : public IBuffer {
+class Semaphore : public IBuffer {
  private:
   std::size_t producer_idx, consumer_idx;
   std::array<Slot, BUFFER_LEN> cont;
-  Custom::Posix::sem_t sem_full, sem_empty, sem_lock;
+  Custom::Posix::sem sem_full, sem_empty, sem_lock;
 
  public:
-  SemaphoreBuffer() : producer_idx{0}, consumer_idx{0} {
+  Semaphore() : producer_idx{0}, consumer_idx{0} {
     // 0 = Semaphore is shared between threads of process
     int p_shared{0};
     if (rk_sema_init(&sem_full, p_shared, 0) != 0) {
@@ -73,7 +74,7 @@ class SemaphoreBuffer : public IBuffer {
     cont.fill(Slot::EMPTY);
   }
 
-  ~SemaphoreBuffer() {
+  ~Semaphore() {
     if (rk_sema_destroy(&sem_full) != 0) {
       std::cerr << "Error destroying Semaphore full lock\n";
     }
@@ -114,8 +115,9 @@ class SemaphoreBuffer : public IBuffer {
     }
   }
 
-  friend std::ostream &operator<<(std::ostream &os,
-                                  const SemaphoreBuffer<BUFFER_LEN> &s) {
+  friend std::ostream &operator<<(
+      std::ostream &os,
+      const Custom::ProducerConsumer::Semaphore<BUFFER_LEN> &s) {
     os << "[";
     std::copy(s.cont.begin(), s.cont.end(),
               std::ostream_iterator<Slot>(os, ""));
@@ -123,5 +125,61 @@ class SemaphoreBuffer : public IBuffer {
     return os;
   }
 };
+
+}  // namespace ProducerConsumer
+
+namespace Binary {
+template <std::size_t LEN>
+class Semaphore {
+  std::vector<std::thread> threads;
+  Custom::Posix::sem sem_even, sem_odd;
+  std::size_t counter;
+
+ public:
+  Semaphore() : threads(2), counter{1} {
+    // 0 = Semaphore is shared between threads of process
+    int p_shared = 0;
+    // 1 unlocked for 'odd' semaphore
+    if (rk_sema_init(&sem_odd, p_shared, 1) != 0) {
+      std::cerr << "Error init semaphore for odd lock\n";
+    }
+    // 0 locked for 'even' semaphore
+    if (rk_sema_init(&sem_even, p_shared, 0) != 0) {
+      std::cerr << "Error init semaphore for even lock\n";
+    }
+  }
+
+  void run() {
+    // print odd
+    auto print_number = [&](bool is_odd) {
+      std::string msg = is_odd ? "Odd" : "Even";
+      while (true) {
+        rk_sema_wait(is_odd ? &sem_odd : &sem_even);
+        std::cout << msg << " number is " << counter++ << std::endl;
+        rk_sema_post(is_odd ? &sem_even : &sem_odd);
+        if (counter >= LEN) {
+          break;
+        }
+      }
+    };
+    // print odd
+    threads.push_back(std::thread(print_number, true));
+    // print even
+    threads.push_back(std::thread(print_number, false));
+  }
+
+  ~Semaphore() {
+    wait_threads(threads);
+    if (rk_sema_destroy(&sem_odd) != 0) {
+      std::cerr << "Error destroying Semaphore odd lock\n";
+    }
+    if (rk_sema_destroy(&sem_even) != 0) {
+      std::cerr << "Error destroying Semaphore even lock\n";
+    }
+  }
+};
+}  // namespace Binary
+
+}  // namespace Custom
 
 #endif
