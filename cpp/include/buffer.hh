@@ -17,7 +17,7 @@ using sem = struct rk_sema;
 }  // namespace Posix
 
 namespace ProducerConsumer {
-enum Slot {
+enum class Slot : char {
   EMPTY,
   TAKEN,
   RECENTLY,
@@ -40,26 +40,22 @@ std::ostream &operator<<(std::ostream &os, const Slot &s) {
   return os;
 }
 
-class IBuffer {
- public:
-  virtual void producer(std::size_t const) = 0;
-
-  virtual void consumer(std::size_t const) = 0;
-
-  virtual ~IBuffer() = 0;
-};
-
-IBuffer::~IBuffer() {}
-
 template <std::size_t BUFFER_LEN>
-class Semaphore : public IBuffer {
+class Semaphore {
  private:
+  std::size_t n_producers, n_consumers;
   std::size_t producer_idx, consumer_idx;
+  Posix::sem sem_full, sem_empty, sem_lock;
   std::array<Slot, BUFFER_LEN> cont;
-  Custom::Posix::sem sem_full, sem_empty, sem_lock;
+  std::vector<std::thread> threads;
 
  public:
-  Semaphore() : producer_idx{0}, consumer_idx{0} {
+  Semaphore(std::size_t const n_producers, std::size_t const n_consumers)
+      : n_producers{n_producers},
+        n_consumers{n_consumers},
+        producer_idx{0},
+        consumer_idx{0},
+        threads(n_producers + n_consumers) {
     // 0 = Semaphore is shared between threads of process
     int p_shared{0};
     if (rk_sema_init(&sem_full, p_shared, 0) != 0) {
@@ -72,9 +68,25 @@ class Semaphore : public IBuffer {
       std::cerr << "Error init semaphore for lock\n";
     }
     cont.fill(Slot::EMPTY);
+    std::cout << "Warehouse schema" << std::endl;
+    std::cout << "\t0 Empty slot" << std::endl;
+    std::cout << "\t* Taken slot" << std::endl;
+    std::cout << "\t+ Recently taken by worker" << std::endl << std::endl;
+    std::cout << "Number of trucks  (producers): " << n_producers << std::endl;
+    std::cout << "Number of workers (consumers): " << n_consumers << std::endl;
+  }
+
+  void run() {
+    for (std::size_t i = 0; i < n_producers; ++i) {
+      threads.push_back(std::thread([this]() { producer(); }));
+    }
+    for (std::size_t i = 0; i < n_consumers; ++i) {
+      threads.push_back(std::thread([this]() { consumer(); }));
+    }
   }
 
   ~Semaphore() {
+    wait_threads(threads);
     if (rk_sema_destroy(&sem_full) != 0) {
       std::cerr << "Error destroying Semaphore full lock\n";
     }
@@ -86,7 +98,17 @@ class Semaphore : public IBuffer {
     }
   }
 
-  void producer(std::size_t const producer_id) {
+  friend std::ostream &operator<<(std::ostream &os,
+                                  const Semaphore<BUFFER_LEN> &s) {
+    os << "[";
+    std::copy(s.cont.begin(), s.cont.end(),
+              std::ostream_iterator<Slot>(os, ""));
+    os << "]" << std::endl;
+    return os;
+  }
+
+ private:
+  void producer() {
     while (true) {
       rk_sema_wait(&sem_empty);
       rk_sema_wait(&sem_lock);
@@ -100,7 +122,7 @@ class Semaphore : public IBuffer {
     }
   }
 
-  void consumer(std::size_t const consumer_id) {
+  void consumer() {
     while (true) {
       rk_sema_wait(&sem_full);
       rk_sema_wait(&sem_lock);
@@ -114,16 +136,6 @@ class Semaphore : public IBuffer {
       rk_sema_post(&sem_empty);
     }
   }
-
-  friend std::ostream &operator<<(
-      std::ostream &os,
-      const Custom::ProducerConsumer::Semaphore<BUFFER_LEN> &s) {
-    os << "[";
-    std::copy(s.cont.begin(), s.cont.end(),
-              std::ostream_iterator<Slot>(os, ""));
-    os << "]" << std::endl;
-    return os;
-  }
 };
 
 }  // namespace ProducerConsumer
@@ -132,7 +144,7 @@ namespace Binary {
 template <std::size_t LEN>
 class Semaphore {
   std::vector<std::thread> threads;
-  Custom::Posix::sem sem_even, sem_odd;
+  Posix::sem sem_even, sem_odd;
   std::size_t counter;
 
  public:
@@ -141,26 +153,22 @@ class Semaphore {
     int p_shared = 0;
     // 1 unlocked for 'odd' semaphore
     if (rk_sema_init(&sem_odd, p_shared, 1) != 0) {
-      std::cerr << "Error init semaphore for odd lock\n";
+      std::cerr << "Error init semaphore for odd lock" << std::endl;
     }
     // 0 locked for 'even' semaphore
     if (rk_sema_init(&sem_even, p_shared, 0) != 0) {
-      std::cerr << "Error init semaphore for even lock\n";
+      std::cerr << "Error init semaphore for even lock" << std::endl;
     }
   }
 
   void run() {
-    // print odd
-    auto print_number = [&](bool is_odd) {
+    auto print_number = [this](bool const is_odd) -> void {
       std::string msg = is_odd ? "Odd" : "Even";
-      while (true) {
+      do {
         rk_sema_wait(is_odd ? &sem_odd : &sem_even);
         std::cout << msg << " number is " << counter++ << std::endl;
         rk_sema_post(is_odd ? &sem_even : &sem_odd);
-        if (counter >= LEN) {
-          break;
-        }
-      }
+      } while (counter < LEN);
     };
     // print odd
     threads.push_back(std::thread(print_number, true));
@@ -171,10 +179,10 @@ class Semaphore {
   ~Semaphore() {
     wait_threads(threads);
     if (rk_sema_destroy(&sem_odd) != 0) {
-      std::cerr << "Error destroying Semaphore odd lock\n";
+      std::cerr << "Error destroying Semaphore odd lock" << std::endl;
     }
     if (rk_sema_destroy(&sem_even) != 0) {
-      std::cerr << "Error destroying Semaphore even lock\n";
+      std::cerr << "Error destroying Semaphore even lock" << std::endl;
     }
   }
 };
