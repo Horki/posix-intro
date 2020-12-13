@@ -82,6 +82,9 @@ bin/cpp/cc_lab05_a: cpp/cc_lab05_a.cc cpp/include/buffer.hh c/include/posix_sema
 bin/cpp/cc_lab05_b: cpp/cc_lab05_b.cc cpp/include/buffer.hh c/include/posix_semaphore.h
 	$(CPP) $(CPP_FLAGS) -Ic/include -Icpp/include -o $@ $< -pthread
 
+bin/cpp/cc_lab06: cpp/cc_lab06.cc cpp/include/common.hh c/include/posix_semaphore.h
+	$(CPP) $(CPP_FLAGS) -Ic/include -Icpp/include -o $@ $< -pthread
+
 bin/cpp/%: cpp/%.cc
 	$(CPP) $(CPP_FLAGS) -Icpp/include -o $@ $^ -pthread
 
