@@ -20,6 +20,8 @@
 #define STR_BUF 256
 #define FILENAME "/shared_object.txt"
 
+static bool running = true;
+
 #define ERROR_MSG(MSG)                              \
   do {                                              \
     fprintf(stderr, "%s:%s", MSG, strerror(errno)); \
@@ -87,6 +89,9 @@ void write_shared(sem_t **one, sem_t **two, char *c) {
   do {
     sem_wait(*one);
     *c = fgetc(stdin);
+    if (!running) {
+      *c = '0';
+    }
     sem_post(*two);
   } while (*c++ != END_CHAR);
 }
@@ -125,7 +130,7 @@ void create_mapping(int *fd, char **c) {
             FILE_LEN,                // Block size in memory (bytes)
                                      //      sb.st_size,
             PROT_READ | PROT_WRITE,  // Privileges
-            MAP_SHARED,              // Flags: shared between procesess
+            MAP_SHARED,              // Flags: shared between processes
             *fd,                     // File descriptor
             0                        // Offset: from beginning
   );
