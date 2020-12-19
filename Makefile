@@ -55,10 +55,10 @@ bin/c/c_lab07_ipc_shm_w: c/ipc/memory_based/shared_memory/write.c c/ipc/include/
 bin/c/c_lab07_ipc_shm_r: c/ipc/memory_based/shared_memory/read.c c/ipc/include/shm_type.h shared_object.txt
 	$(CC) $(C_FLAGS) -Ic/ipc/include -o $@ $< -lpthread
 
-bin/c/c_lab07_ipc_socket_server: c/ipc/message_passing/socket/server.c c/ipc/include/common.h
+bin/c/c_lab07_ipc_socket_server: c/ipc/message_passing/socket/server.c c/ipc/include/socket.h
 	$(CC) $(C_FLAGS) -Ic/ipc/include -o $@ $<
 
-bin/c/c_lab07_ipc_socket_client: c/ipc/message_passing/socket/client.c c/ipc/include/common.h
+bin/c/c_lab07_ipc_socket_client: c/ipc/message_passing/socket/client.c c/ipc/include/socket.h
 	$(CC) $(C_FLAGS) -Ic/ipc/include -o $@ $<
 
 bin/c/c_lab07_ipc_mq_write: c/ipc/message_passing/message_queue/write.c c/ipc/include/type.h

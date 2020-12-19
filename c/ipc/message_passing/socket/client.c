@@ -1,65 +1,37 @@
-#include <arpa/inet.h>   // htons
-#include <netdb.h>       // gethostbyname, hostent
-#include <netinet/in.h>  // sockaddr_in, in_addr
-#include <stdbool.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>      // memset
-#include <sys/socket.h>  // socket, AF_INET, AF_LOCAL
-#include <unistd.h>      // close, read, write
+#include <netdb.h>   // hostent
+#include <stdio.h>   // puts, printf, fgets, fprintf
+#include <stdlib.h>  // EXIT_SUCCESS
+#include <string.h>  // strtok
+#include <unistd.h>  // close, read, write
 
-#include "common.h"  // report, HOST, PORT_NUMBER
+#include "socket.h"  // create_socket, get_address, connect_to_server
 
 int main() {
   puts("Socket Client");
   puts("Please run ./bin/c_lab07_ipc_socket_server");
-  // Create Kernel-Level socket buffer
-  int socket_fd =
-      socket(AF_INET,      // Network VS AF_LOCAL
-             SOCK_STREAM,  // Reliable bidirectional, arbitrary payload size
-             0             // System picks underlying protocol, TCP
-      );
-
-  if (socket_fd < 0) {
-    report("socket", true);
-  }
+  int socket_fd = create_socket();
+  puts("Write 'done' to kill the server");
 
   // Get the address of the host
-  struct hostent *hptr = gethostbyname(HOST);
-  if (!hptr) {
-    report("gethostbyname", true);
-  }
-  if (hptr->h_addrtype != AF_INET) {
-    report("bad address family", true);
-  }
+  struct hostent hptr = get_address();
 
-  // Connect to the server: configure server's address list
-  struct sockaddr_in socket_addr;
-  memset(&socket_addr, 0, sizeof socket_addr);
-  socket_addr.sin_family = AF_INET;
-  socket_addr.sin_addr.s_addr =
-      ((struct in_addr *)hptr->h_addr_list[0])->s_addr;
-  // for listening
-  socket_addr.sin_port = htons(PORT_NUMBER);
+  connect_to_server(socket_fd, &hptr);
 
-  if (connect(socket_fd, (struct sockaddr *)&socket_addr, sizeof socket_addr) <
-      0) {
-    report("connect", true);
-  }
-
-  // Write some stuff and read the echoes
-  printf("Connected to server %s:%i\n", HOST, PORT_NUMBER);
-
-  // Read from client
+  // Send to server
   char buffer[BUFFER_SIZE + 1];
-  puts("Insert message: ");
+  printf("Insert message: ");
   fgets(buffer, BUFFER_SIZE, stdin);
+  strtok(buffer, "\n");
 
   if (write(socket_fd, buffer, strlen(buffer)) > 0) {
-    memset(buffer, '\0', sizeof buffer);
+    puts("Message sent");
     if (read(socket_fd, buffer, sizeof buffer) > 0) {
       printf("Sent: '%s'\n", buffer);
+    } else {
+      fprintf(stderr, "Message failed reading");
     }
+  } else {
+    fprintf(stderr, "Message sending failed");
   }
 
   // Break connection
