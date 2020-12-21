@@ -3,13 +3,19 @@
 
 #include <arpa/inet.h>   // htonl, htons
 #include <netdb.h>       // gethostbyname, hostent
-#include <netinet/in.h>  // sockaddr_in, INADDR_ANY
-#include <stdbool.h>     // bool
-#include <stdio.h>       // printf
+#include <netinet/in.h>  // sockaddr_in, in_addr, INADDR_ANY
+#include <stdbool.h>     // true
+#include <stdio.h>       // printf, perror
+#include <stdlib.h>      // exit, EXIT_FAILURE
 #include <string.h>      // memset
-#include <sys/socket.h>  // socket, AF_INET, AF_LOCAL
+#include <sys/socket.h>  // socket, socketaddr, AF_INET, AF_LOCAL, SOCK_STREAM
 
 #define BUFFER_SIZE 20
+
+typedef struct hostent host_t;
+typedef struct in_addr addr_t;
+typedef struct sockaddr sck_t;
+typedef struct sockaddr_in sck_in_t;
 
 static const char *HOST = "localhost";
 static const u_int16_t PORT_NUMBER = 8080;
@@ -36,17 +42,15 @@ int create_socket() {
 }
 
 // Connect to the server: configure server's address list
-void connect_to_server(int socket_fd, struct hostent *hptr) {
-  struct sockaddr_in socket_addr;
+void connect_to_server(int socket_fd, host_t *hptr) {
+  sck_in_t socket_addr;
   memset(&socket_addr, 0, sizeof socket_addr);
   socket_addr.sin_family = AF_INET;
-  socket_addr.sin_addr.s_addr =
-      ((struct in_addr *)hptr->h_addr_list[0])->s_addr;
+  socket_addr.sin_addr.s_addr = ((addr_t *)hptr->h_addr_list[0])->s_addr;
   // for listening
   socket_addr.sin_port = htons(PORT_NUMBER);
 
-  if (connect(socket_fd, (struct sockaddr *)&socket_addr, sizeof socket_addr) <
-      0) {
+  if (connect(socket_fd, (sck_t *)&socket_addr, sizeof socket_addr) < 0) {
     report("connect", true);
   }
 
@@ -56,15 +60,14 @@ void connect_to_server(int socket_fd, struct hostent *hptr) {
 
 // Bind the server local memory in address
 void bind_to_server(int socket_fd) {
-  struct sockaddr_in socket_addr;
+  sck_in_t socket_addr;
   memset(&socket_addr, 0, sizeof socket_addr);
   socket_addr.sin_family = AF_INET;
   socket_addr.sin_addr.s_addr = htonl(INADDR_ANY);
   // for listening
   socket_addr.sin_port = htons(PORT_NUMBER);
 
-  if (bind(socket_fd, (struct sockaddr *)&socket_addr, sizeof socket_addr) <
-      0) {
+  if (bind(socket_fd, (sck_t *)&socket_addr, sizeof socket_addr) < 0) {
     report("bind", true);
   }
 
@@ -79,15 +82,15 @@ void bind_to_server(int socket_fd) {
 }
 
 // Get the address of the host
-struct hostent get_address() {
-  struct hostent *hptr = gethostbyname(HOST);
+host_t *get_address() {
+  host_t *hptr = gethostbyname(HOST);
   if (!hptr) {
     report("gethostbyname", true);
   }
   if (hptr->h_addrtype != AF_INET) {
     report("bad address family", true);
   }
-  return *hptr;
+  return hptr;
 }
 
 #endif
