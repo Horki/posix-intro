@@ -1,14 +1,14 @@
 #ifndef POSIX_SEMAPHORE_H_
 #define POSIX_SEMAPHORE_H_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #ifdef __APPLE__
 #include <dispatch/dispatch.h>
 #else
 #include <semaphore.h>
-#endif
-
-#ifdef __cplusplus
-extern "C" {
 #endif
 
 struct rk_sema {
