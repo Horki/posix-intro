@@ -17,7 +17,8 @@ CPP_BINS=bin/cpp/cc_lab01 \
 			 bin/cpp/cc_lab03_a bin/cpp/cc_lab03_b \
 			 bin/cpp/cc_lab04 \
 			 bin/cpp/cc_lab05_a bin/cpp/cc_lab05_b \
-			 bin/cpp/cc_lab06
+			 bin/cpp/cc_lab06 \
+			 bin/cpp/cc_lab07_ipc_pipe
 
 C_BINS=bin/c/c_lab01 \
 			 bin/c/c_lab02_a bin/c/c_lab02_b \
@@ -85,6 +86,9 @@ bin/cpp/cc_lab05_b: cpp/cc_lab05_b.cc cpp/include/buffer.hh c/include/posix_sema
 bin/cpp/cc_lab06: cpp/cc_lab06.cc cpp/include/common.hh c/include/posix_semaphore.h
 	$(CPP) $(CPP_FLAGS) -Ic/include -Icpp/include -o $@ $< -pthread
 
+bin/cpp/cc_lab07_ipc_pipe: cpp/ipc/message_passing/pipe/twowaypipe.cc
+	$(CPP) $(CPP_FLAGS) -o $@ $<
+
 bin/cpp/%: cpp/%.cc
 	$(CPP) $(CPP_FLAGS) -Icpp/include -o $@ $^ -pthread
 
@@ -95,9 +99,9 @@ bin/rust/%: rust/%.rs
 	rustup run stable $(RUSTC) $(RUSTC_FLAGS) -o $@ $^
 
 format:
-	rustfmt rust/*.rs && clang-format cpp/*.cc cpp/include/*.hh c/*.c \
+	rustfmt rust/*.rs && clang-format cpp/*.cc cpp/ipc/*/*/*.cc cpp/include/*.hh c/*.c \
 		c/include/*.h c/ipc/include/*.h \
-		c/ipc/message_passing/*/*.c c/ipc/memory_based/*/*.c -i
+		c/ipc/*/*/*.c -i
 
 clean:
 	rm -rf bin/ *.txt $(OSX_BIN)
