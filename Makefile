@@ -18,7 +18,8 @@ CPP_BINS=bin/cpp/cc_lab01 \
 			 bin/cpp/cc_lab04 \
 			 bin/cpp/cc_lab05_a bin/cpp/cc_lab05_b \
 			 bin/cpp/cc_lab06 \
-			 bin/cpp/cc_lab07_ipc_pipe
+			 bin/cpp/cc_lab07_ipc_pipe \
+			 bin/cpp/cc_lab07_ipc_mq_write bin/cpp/cc_lab07_ipc_mq_read
 
 C_BINS=bin/c/c_lab01 \
 			 bin/c/c_lab02_a bin/c/c_lab02_b \
@@ -89,6 +90,12 @@ bin/cpp/cc_lab06: cpp/cc_lab06.cc cpp/include/common.hh c/include/posix_semaphor
 bin/cpp/cc_lab07_ipc_pipe: cpp/ipc/message_passing/pipe/twowaypipe.cc
 	$(CPP) $(CPP_FLAGS) -o $@ $<
 
+bin/cpp/cc_lab07_ipc_mq_write: cpp/ipc/message_passing/message_queue/write.cc cpp/ipc/message_passing/message_queue/mqueue.hh
+	$(CPP) $(CPP_FLAGS) -o $@ $<
+
+bin/cpp/cc_lab07_ipc_mq_read: cpp/ipc/message_passing/message_queue/read.cc cpp/ipc/message_passing/message_queue/mqueue.hh
+	$(CPP) $(CPP_FLAGS) -o $@ $<
+
 bin/cpp/%: cpp/%.cc
 	$(CPP) $(CPP_FLAGS) -Icpp/include -o $@ $^ -pthread
 
@@ -99,7 +106,7 @@ bin/rust/%: rust/%.rs
 	rustup run stable $(RUSTC) $(RUSTC_FLAGS) -o $@ $^
 
 format:
-	rustfmt rust/*.rs && clang-format cpp/*.cc cpp/ipc/*/*/*.cc cpp/include/*.hh c/*.c \
+	rustfmt rust/*.rs && clang-format cpp/*.cc cpp/ipc/*/*/*.cc cpp/ipc/*/*/*.hh cpp/include/*.hh c/*.c \
 		c/include/*.h c/ipc/include/*.h \
 		c/ipc/*/*/*.c -i
 
