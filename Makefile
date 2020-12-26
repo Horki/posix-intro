@@ -19,7 +19,8 @@ CPP_BINS=bin/cpp/cc_lab01 \
 			 bin/cpp/cc_lab05_a bin/cpp/cc_lab05_b \
 			 bin/cpp/cc_lab06 \
 			 bin/cpp/cc_lab07_ipc_pipe \
-			 bin/cpp/cc_lab07_ipc_mq_write bin/cpp/cc_lab07_ipc_mq_read
+			 bin/cpp/cc_lab07_ipc_mq_write bin/cpp/cc_lab07_ipc_mq_read \
+			 bin/cpp/cc_lab07_ipc_socket_server bin/cpp/cc_lab07_ipc_socket_client
 
 C_BINS=bin/c/c_lab01 \
 			 bin/c/c_lab02_a bin/c/c_lab02_b \
@@ -94,6 +95,12 @@ bin/cpp/cc_lab07_ipc_mq_write: cpp/ipc/message_passing/message_queue/write.cc cp
 	$(CPP) $(CPP_FLAGS) -o $@ $<
 
 bin/cpp/cc_lab07_ipc_mq_read: cpp/ipc/message_passing/message_queue/read.cc cpp/ipc/message_passing/message_queue/mqueue.hh
+	$(CPP) $(CPP_FLAGS) -o $@ $<
+
+bin/cpp/cc_lab07_ipc_socket_server: cpp/ipc/message_passing/socket/server.cc cpp/ipc/message_passing/socket/sockets.hh
+	$(CPP) $(CPP_FLAGS) -o $@ $<
+
+bin/cpp/cc_lab07_ipc_socket_client: cpp/ipc/message_passing/socket/client.cc cpp/ipc/message_passing/socket/sockets.hh
 	$(CPP) $(CPP_FLAGS) -o $@ $<
 
 bin/cpp/%: cpp/%.cc
