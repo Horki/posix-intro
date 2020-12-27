@@ -1,10 +1,10 @@
 #include <semaphore.h>  // sem_t, sem_open, sem_wait, sem_post, sem_unlink
-#include <signal.h>     // SIGINT, ...
-#include <stdbool.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include <signal.h>     // SIGINT, catch_signal
+#include <stdbool.h>    // false
+#include <stdio.h>      // puts, printf
+#include <stdlib.h>     // EXIT_SUCCESS
 
-#include "shm_type.h"
+#include "shm_type.h"  // ERROR_MSG
 
 static void close_write(int);
 
