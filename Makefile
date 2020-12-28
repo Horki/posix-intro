@@ -18,6 +18,7 @@ CPP_BINS=bin/cpp/cc_lab01 \
 			 bin/cpp/cc_lab04 \
 			 bin/cpp/cc_lab05_a bin/cpp/cc_lab05_b \
 			 bin/cpp/cc_lab06 \
+			 bin/cpp/cc_lab07_ipc_shm_w bin/cpp/cc_lab07_ipc_shm_r \
 			 bin/cpp/cc_lab07_ipc_pipe \
 			 bin/cpp/cc_lab07_ipc_mq_write bin/cpp/cc_lab07_ipc_mq_read \
 			 bin/cpp/cc_lab07_ipc_socket_server bin/cpp/cc_lab07_ipc_socket_client
@@ -87,6 +88,12 @@ bin/cpp/cc_lab05_b: cpp/cc_lab05_b.cc cpp/include/buffer.hh c/include/posix_sema
 
 bin/cpp/cc_lab06: cpp/cc_lab06.cc cpp/include/common.hh c/include/posix_semaphore.h
 	$(CPP) $(CPP_FLAGS) -Ic/include -Icpp/include -o $@ $< -pthread
+
+bin/cpp/cc_lab07_ipc_shm_r: cpp/ipc/memory_based/shared_memory/read.cc cpp/ipc/memory_based/shared_memory/shm.hh
+	$(CPP) $(CPP_FLAGS) -o $@ $< -pthread
+
+bin/cpp/cc_lab07_ipc_shm_w: cpp/ipc/memory_based/shared_memory/write.cc cpp/ipc/memory_based/shared_memory/shm.hh
+	$(CPP) $(CPP_FLAGS) -o $@ $< -pthread
 
 bin/cpp/cc_lab07_ipc_pipe: cpp/ipc/message_passing/pipe/twowaypipe.cc
 	$(CPP) $(CPP_FLAGS) -o $@ $<
