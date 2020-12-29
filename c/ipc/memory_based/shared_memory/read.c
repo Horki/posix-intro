@@ -1,9 +1,9 @@
 #include <semaphore.h>  // sem_t, sem_open, sem_wait, sem_post, sem_unlink
-#include <stdbool.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include <stdbool.h>    // false
+#include <stdio.h>      // puts
+#include <stdlib.h>     // EXIT_SUCCESS
 
-#include "shm_type.h"
+#include "shm_type.h"  // open_semaphores, open_mapping, print_shared, close_semaphores, close_mapping
 
 int main() {
   int fd;
@@ -11,7 +11,7 @@ int main() {
   sem_t *sem_two = NULL;
   char *c = NULL;
   puts("Read process from shared buffer");
-  puts("run ./bin/c/c_lab07_ipc_shm_w");
+  puts("run ./bin/c/c_lab07_ipc_shm_w or /bin/cpp/cc_lab07_ipc_shm_w");
 
   open_semaphores(&sem_one, &sem_two);
   open_mapping(&fd, &c);

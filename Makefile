@@ -89,10 +89,10 @@ bin/cpp/cc_lab05_b: cpp/cc_lab05_b.cc cpp/include/buffer.hh c/include/posix_sema
 bin/cpp/cc_lab06: cpp/cc_lab06.cc cpp/include/common.hh c/include/posix_semaphore.h
 	$(CPP) $(CPP_FLAGS) -Ic/include -Icpp/include -o $@ $< -pthread
 
-bin/cpp/cc_lab07_ipc_shm_r: cpp/ipc/memory_based/shared_memory/read.cc cpp/ipc/memory_based/shared_memory/shm.hh
+bin/cpp/cc_lab07_ipc_shm_r: cpp/ipc/memory_based/shared_memory/read.cc cpp/ipc/memory_based/shared_memory/shm.hh shared_object.txt
 	$(CPP) $(CPP_FLAGS) -o $@ $< -pthread
 
-bin/cpp/cc_lab07_ipc_shm_w: cpp/ipc/memory_based/shared_memory/write.cc cpp/ipc/memory_based/shared_memory/shm.hh
+bin/cpp/cc_lab07_ipc_shm_w: cpp/ipc/memory_based/shared_memory/write.cc cpp/ipc/memory_based/shared_memory/shm.hh shared_object.txt
 	$(CPP) $(CPP_FLAGS) -o $@ $< -pthread
 
 bin/cpp/cc_lab07_ipc_pipe: cpp/ipc/message_passing/pipe/twowaypipe.cc

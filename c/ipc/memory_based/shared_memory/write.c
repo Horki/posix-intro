@@ -4,7 +4,7 @@
 #include <stdio.h>      // puts, printf
 #include <stdlib.h>     // EXIT_SUCCESS
 
-#include "shm_type.h"  // ERROR_MSG
+#include "shm_type.h"  // ERROR_MSG, init_semaphores, create_mapping, write_shared, close_semaphores, close_mapping
 
 static void close_write(int);
 
@@ -15,7 +15,7 @@ int main() {
   char *c = NULL;
 
   puts("Write process to shared buffer");
-  puts("run ./bin/c/c_lab07_ipc_shm_r");
+  puts("run ./bin/c/c_lab07_ipc_shm_r or /bin/cpp/cc_lab07_ipc_shm_r");
 
   // SIGINT handler
   if (catch_signal(SIGINT, close_write) == -1) {
