@@ -9,8 +9,9 @@
 class BaseExcInterface {
  public:
   virtual std::string what() const = 0;
-  virtual ~BaseExcInterface() {}
+  virtual ~BaseExcInterface() = 0;
 };
+BaseExcInterface::~BaseExcInterface() {}
 
 class Exc : public BaseExcInterface {
  protected:

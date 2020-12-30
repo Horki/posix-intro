@@ -9,53 +9,44 @@
 
 #include <cstring>  // memset, strncasecmp
 #include <iostream>
-#include <string_view>
+#include <string>
 
 namespace Socket {
 namespace Exception {
 class Exc {
  public:
-  virtual std::string_view what() const = 0;
+  virtual std::string what() const = 0;
   virtual ~Exc() = 0;
 };
 Exc::~Exc() {}
 class Socket : public Exc {
  public:
-  [[nodiscard]] std::string_view what() const {
-    return "Cannot connect to socket";
-  }
+  std::string what() const { return "Cannot connect to socket"; }
 };
 class Connection : public Exc {
  public:
-  [[nodiscard]] std::string_view what() const { return "Cannot connect"; }
+  std::string what() const { return "Cannot connect"; }
 };
 class Bind : public Exc {
  public:
-  [[nodiscard]] std::string_view what() const { return "Cannot bind"; }
+  std::string what() const { return "Cannot bind"; }
 };
 class Listen : public Exc {
  public:
-  [[nodiscard]] std::string_view what() const { return "Cannot Listen"; }
+  std::string what() const { return "Cannot Listen"; }
 };
 class Host : public Exc {
  public:
-  [[nodiscard]] std::string_view what() const {
-    return "Cannot get host by name";
-  }
+  std::string what() const { return "Cannot get host by name"; }
 };
-
 class BadAddress : public Exc {
  public:
-  [[nodiscard]] std::string_view what() const {
-    return "Cannot get host by name";
-  }
+  std::string what() const { return "Cannot get host by name"; }
 };
-
 class Accept : public Exc {
  public:
-  [[nodiscard]] std::string_view what() const { return "Cannot accept"; }
+  std::string what() const { return "Cannot accept"; }
 };
-
 }  // namespace Exception
 class Task {
  public:

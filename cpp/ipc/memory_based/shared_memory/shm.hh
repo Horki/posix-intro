@@ -16,7 +16,9 @@ namespace Exception {
 class Exc {
  public:
   virtual std::string what() const = 0;
+  virtual ~Exc() = 0;
 };
+Exc::~Exc() {}
 class Semaphore : public Exc {
  public:
   std::string what() const { return "Semaphore exception"; }
