@@ -16,9 +16,9 @@ namespace Exception {
 class Exc {
  public:
   virtual std::string what() const = 0;
-  virtual ~Exc() = 0;
+  virtual ~Exc() {}
 };
-Exc::~Exc() {}
+
 class Socket : public Exc {
  public:
   std::string what() const { return "Cannot connect to socket"; }
@@ -51,10 +51,9 @@ class Accept : public Exc {
 class Task {
  public:
   virtual void run() const = 0;
-  virtual ~Task() = 0;
+  virtual ~Task() {}
 };
 
-Task::~Task() {}
 struct Common {
   static constexpr std::streamsize buffer{20};
   static constexpr const char *host = "localhost";
@@ -78,7 +77,7 @@ struct Common {
   }
 };
 
-class Client : public Task {
+class Client : public virtual Task {
   int client_fd;
   struct hostent *h_ptr;
   mutable char msg[Common::buffer];
@@ -142,7 +141,7 @@ class Client : public Task {
   }
 };
 
-class Server : public Task {
+class Server : public virtual Task {
   int client_fd;
   int server_fd;
   mutable char msg[Common::buffer];

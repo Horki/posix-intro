@@ -16,9 +16,8 @@ namespace Exception {
 class Exc {
  public:
   virtual std::string what() const = 0;
-  virtual ~Exc() = 0;
+  virtual ~Exc() {}
 };
-Exc::~Exc() {}
 class Semaphore : public Exc {
  public:
   std::string what() const { return "Semaphore exception"; }
@@ -56,11 +55,10 @@ struct Common {
 class Task {
  public:
   virtual void run() = 0;
-  virtual ~Task() = 0;
+  virtual ~Task() {}
 };
-Task::~Task() {}
 
-class Write : public Task {
+class Write : public virtual Task {
   sem_t *sem_one, *sem_two;
   int fd;
   char *c;
@@ -108,7 +106,7 @@ class Write : public Task {
   }
 };
 
-class Read : public Task {
+class Read : public virtual Task {
   sem_t *sem_one, *sem_two;
   int fd;
   char *c;

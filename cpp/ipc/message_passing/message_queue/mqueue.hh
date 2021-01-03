@@ -12,12 +12,8 @@ namespace MessageQueue {
 class Task {
  public:
   virtual void run() const = 0;
-  virtual ~Task() = 0;
+  virtual ~Task() {}
 };
-
-Task::~Task() {
-  //
-}
 
 class Queue {
  private:
@@ -47,7 +43,7 @@ class Queue {
   }
 };
 
-class Write : public Queue, Task {
+class Write : public Queue, public virtual Task {
  public:
   Write() : Queue() { msg.type = 1; }
   void run() const {
@@ -62,7 +58,7 @@ class Write : public Queue, Task {
   }
 };
 
-class Read : public Queue, Task {
+class Read : public Queue, public virtual Task {
  public:
   Read() : Queue() { msg.type = 0; }
   ~Read() { msgctl(queue_id, IPC_RMID, nullptr); }
