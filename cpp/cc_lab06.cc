@@ -44,7 +44,7 @@ class Semaphore {
       std::cout << "Airplane " << i << " => Control tower: permission to land"
                 << std::endl;
       // Capture i by copy, sem_bin by reference
-      threads.push_back(std::thread(airplane, i));
+      threads.emplace_back(airplane, i);
     }
   }
 };

@@ -6,9 +6,11 @@
 #include "common.hh"  // wait_threads
 
 int main() {
+  // TODO: fix this!
   constexpr std::size_t no_th{5};
   std::mutex mut;
-  std::vector<std::thread> threads(no_th);
+  std::vector<std::thread> threads;
+  threads.reserve(no_th);
   auto airplanes = [&m = mut](std::size_t const airplane_id) -> void {
     std::cout << "Airplane " << airplane_id
               << " => Control tower: permission to land" << std::endl;
@@ -23,7 +25,7 @@ int main() {
     }  // unlock lock
   };
   for (std::size_t i{1}; i <= no_th; ++i) {
-    threads.push_back(std::thread(airplanes, i));
+    threads.emplace_back(airplanes, i);
   }
   wait_threads(threads);
 }

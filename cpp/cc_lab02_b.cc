@@ -74,11 +74,11 @@ int main() {
     std::cout << "B: " << std::endl;
     std::cout << b;
     for (std::size_t row{0}; row < rows; ++row) {
-      threads.push_back(std::thread([&, columns = cols, current_row = row] {
+      threads.emplace_back([&, columns = cols, current_row = row] {
         for (std::size_t col{0}; col < columns; ++col) {
           res(current_row, col) += a(current_row, col) + b(current_row, col);
         }
-      }));
+      });
     }
     std::cout << "wait for join threads" << std::endl;
     for (auto &t : threads) {
