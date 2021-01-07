@@ -9,6 +9,7 @@
 #include <cstdio>      // fgetc
 #include <filesystem>  // filesystem::current_path
 #include <iostream>
+#include <memory>  // unique_ptr
 #include <string>
 
 namespace SharedMemory {
@@ -59,7 +60,7 @@ class Task {
 };
 
 class Write : public virtual Task {
-  sem_t *sem_one, *sem_two;
+  std::unique_ptr<sem_t *> sem_one, sem_two;
   int fd;
   char *c;
 
@@ -68,7 +69,7 @@ class Write : public virtual Task {
       : sem_one{init_sem(Common::sem_one_name)},
         sem_two{init_sem(Common::sem_two_name)} {
     // Look inside /dev/shm
-    if (sem_one == SEM_FAILED || sem_two == SEM_FAILED) {
+    if (*sem_one == SEM_FAILED || *sem_two == SEM_FAILED) {
       throw Exception::Semaphore{};
     }
     std::string path =
@@ -82,27 +83,27 @@ class Write : public virtual Task {
   void run() {
     std::cout << "Waiting read process!!!" << std::endl;
     do {
-      sem_wait(sem_one);
+      sem_wait(*sem_one);
       *c = fgetc(stdin);
-      sem_post(sem_two);
+      sem_post(*sem_two);
     } while (*c++ != '0');
   }
   ~Write() {
     close(fd);
-    sem_close(sem_one);
-    sem_close(sem_two);
+    sem_close(*sem_one);
+    sem_close(*sem_two);
     sem_unlink(Common::sem_one_name);
     sem_unlink(Common::sem_two_name);
     std::cout << "write done" << std::endl;
   }
 
  private:
-  static sem_t *init_sem(const char *name) {
-    return sem_open(name,               // Semaphore name
-                    O_CREAT,            // Flags
-                    S_IRUSR | S_IWUSR,  // Permission
-                    0                   // Value
-    );
+  static std::unique_ptr<sem_t *> init_sem(const char *name) {
+    return std::make_unique<sem_t *>(sem_open(name,     // Semaphore name
+                                              O_CREAT,  // Flags
+                                              S_IRUSR | S_IWUSR,  // Permission
+                                              0                   // Value
+                                              ));
   }
 };
 
