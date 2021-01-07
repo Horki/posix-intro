@@ -108,7 +108,7 @@ class Write : public virtual Task {
 };
 
 class Read : public virtual Task {
-  sem_t *sem_one, *sem_two;
+  std::unique_ptr<sem_t *> sem_one, sem_two;
   int fd;
   char *c;
 
@@ -117,7 +117,7 @@ class Read : public virtual Task {
       : sem_one{open_sem(Common::sem_one_name)},
         sem_two{open_sem(Common::sem_two_name)} {
     // Look inside /dev/shm
-    if (sem_one == SEM_FAILED || sem_two == SEM_FAILED) {
+    if (*sem_one == SEM_FAILED || *sem_two == SEM_FAILED) {
       throw Exception::Semaphore{};
     }
     std::string path =
@@ -129,26 +129,26 @@ class Read : public virtual Task {
     c = Common::map(fd, false);
   }
   void run() {
-    sem_post(sem_one);
+    sem_post(*sem_one);
     std::cout << "Started reading" << std::endl;
     do {
-      sem_wait(sem_two);
+      sem_wait(*sem_two);
       std::cout << *c;
-      sem_post(sem_one);
+      sem_post(*sem_one);
     } while (*c++ != '0');
   }
   ~Read() {
     close(fd);
-    sem_close(sem_one);
-    sem_close(sem_two);
+    sem_close(*sem_one);
+    sem_close(*sem_two);
     std::cout << "read done" << std::endl;
   }
 
  private:
-  static sem_t *open_sem(const char *name) {
-    return sem_open(name,   // Semaphore name
-                    O_RDWR  // Flags
-    );
+  static std::unique_ptr<sem_t *> open_sem(const char *name) {
+    return std::make_unique<sem_t *>(sem_open(name,   // Semaphore name
+                                              O_RDWR  // Flags
+                                              ));
   }
 };
 
