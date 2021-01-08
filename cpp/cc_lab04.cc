@@ -15,7 +15,7 @@ int main() {
       std::unique_lock<std::mutex> lock{m};
       std::cout << "Airplane " << airplane_id
                 << " => Control tower: permission to land" << std::endl;
-    } // unlock lock
+    }  // unlock lock
     {
       std::unique_lock<std::mutex> lock{m};
       std::cout << "Control tower => Airplane " << airplane_id
