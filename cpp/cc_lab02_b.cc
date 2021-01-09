@@ -4,8 +4,11 @@
 #include <iostream>   // cout
 #include <iterator>   // ostream_iterator
 #include <numeric>    // iota
+#include <stdexcept>  // out_of_range
 #include <thread>     // thread
 #include <vector>     // vector
+
+#include "common.hh"  // wait_threads
 
 namespace Custom {
 using Iter = std::ostream_iterator<int>;
@@ -18,7 +21,7 @@ class Matrix {
   std::size_t m;
 
  public:
-  Matrix() : n(N), m(M) {
+  Matrix() : n{N}, m{M} {
     assert(n > 0);
     assert(m > 0);
     for (int i = 0; i < n; ++i) {
@@ -26,7 +29,7 @@ class Matrix {
     }
   }
 
-  Matrix(const int val) : n(N), m(M) {
+  Matrix(const int val) : n{N}, m{M} {
     assert(n > 0);
     assert(m > 0);
     arr.fill(val);
@@ -60,11 +63,13 @@ int main() {
   try {
     constexpr std::size_t rows{15};
     constexpr std::size_t cols{15};
-    std::vector<std::thread> threads(rows);
+    std::vector<std::thread> threads;
+    threads.reserve(rows);
+    using LockFreeMatrix = Custom::Matrix<rows, cols>;
 
-    Custom::Matrix<rows, cols> a;
-    Custom::Matrix<rows, cols> b(2000);
-    Custom::Matrix<rows, cols> res(0);
+    LockFreeMatrix a;
+    LockFreeMatrix b(2000);
+    LockFreeMatrix res(0);
     {
       assert(a.cols() == b.cols() && a.rows() == b.rows());
       assert(a.cols() == res.cols() && a.rows() == res.rows());
@@ -81,11 +86,8 @@ int main() {
       });
     }
     std::cout << "wait for join threads" << std::endl;
-    for (auto &t : threads) {
-      if (t.joinable()) {
-        t.join();
-      }
-    }
+    wait_threads(threads);
+
     std::cout << "result: " << std::endl;
     std::cout << res;
 
