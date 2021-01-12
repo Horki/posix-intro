@@ -1,7 +1,8 @@
-#include <iostream>
-#include <mutex>
-#include <thread>
-#include <vector>
+#include <functional>  // ref
+#include <iostream>    // cout, cerr
+#include <mutex>       // mutex, unique_lock
+#include <thread>      // thread
+#include <vector>      // vector
 
 #include "common.hh"  // wait_threads
 
@@ -10,12 +11,11 @@ int main() {
   std::mutex mut;
   std::vector<std::thread> threads;
   threads.reserve(no_th);
-  auto airplanes = [&m = mut](std::size_t const airplane_id) -> void {
-    {
-      std::unique_lock<std::mutex> lock{m};
-      std::cout << "Airplane " << airplane_id
-                << " => Control tower: permission to land" << std::endl;
-    }  // unlock lock
+  auto airplanes = [](std::mutex& m, std::size_t const airplane_id) -> void {
+    m.lock();
+    std::cout << "Airplane " << airplane_id
+              << " => Control tower: permission to land" << std::endl;
+    m.unlock();
     {
       std::unique_lock<std::mutex> lock{m};
       std::cout << "Control tower => Airplane " << airplane_id
@@ -26,8 +26,15 @@ int main() {
                 << std::endl;
     }  // unlock lock
   };
-  for (std::size_t i{1}; i <= no_th; ++i) {
-    threads.emplace_back(airplanes, i);
+  try {
+    for (std::size_t i{1}; i <= no_th; ++i) {
+      threads.emplace_back(airplanes, std::ref(mut), i);
+    }
+    wait_threads(threads);
+  } catch (const std::system_error& e) {
+    std::cerr << e.what() << std::endl;
+    std::cerr << e.code() << std::endl;
+  } catch (...) {
+    std::cerr << "other" << std::endl;
   }
-  wait_threads(threads);
 }
