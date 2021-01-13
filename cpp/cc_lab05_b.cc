@@ -3,6 +3,10 @@
 #include "buffer.hh"
 
 int main() {
-  { Custom::ProducerConsumer::Semaphore<10> buff(3, 2); }
+  {
+    using MPMC = Custom::ProducerConsumer::Semaphore<10>;
+    MPMC buff(3, 2);
+    buff.run();
+  }
   std::cout << "main done " << std::endl;
 }

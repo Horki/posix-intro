@@ -13,6 +13,12 @@
 #include "posix_semaphore.h"
 
 namespace Custom {
+class Task {
+ public:
+  virtual void run() = 0;
+  virtual ~Task() {}
+};
+
 namespace Posix {
 using sem = struct rk_sema;
 }  // namespace Posix
@@ -42,21 +48,24 @@ std::ostream &operator<<(std::ostream &os, const Slot &s) {
 }
 
 template <std::size_t BUFFER_LEN>
-class Semaphore {
+class Semaphore : public virtual Task {
  private:
   std::size_t n_producers, n_consumers;
   std::size_t producer_idx, consumer_idx;
   Posix::sem sem_full, sem_empty, sem_lock;
   std::array<Slot, BUFFER_LEN> cont;
   std::vector<std::thread> threads;
+  std::chrono::seconds wait;
   static bool running;
 
  public:
-  Semaphore(std::size_t const n_producers, std::size_t const n_consumers)
+  Semaphore(std::size_t const n_producers,
+                     std::size_t const n_consumers)
       : n_producers{n_producers},
         n_consumers{n_consumers},
         producer_idx{0},
-        consumer_idx{0} {
+        consumer_idx{0},
+        wait{1} {
     threads.reserve(n_producers + n_consumers);
     // 0 = Semaphore is shared between threads of process
     int p_shared{0};
@@ -73,8 +82,12 @@ class Semaphore {
       running = false;
       std::cout << "shutting down producer consumer: " << sig << std::endl;
     };
+    std::cout << "Added SIGINT handler" << std::endl;
     signal(SIGINT, handler);
     cont.fill(Slot::EMPTY);
+  }
+
+  void run() {
     std::cout << "Warehouse schema" << std::endl;
     std::cout << "\t0 Empty slot" << std::endl;
     std::cout << "\t* Taken slot" << std::endl;
@@ -120,7 +133,7 @@ class Semaphore {
       cont[producer_idx] = Slot::TAKEN;
       std::cout << *this;
       producer_idx = (producer_idx + 1) % BUFFER_LEN;
-      std::this_thread::sleep_for(std::chrono::seconds(1));
+      std::this_thread::sleep_for(wait);
       rk_sema_post(&sem_lock);
       rk_sema_post(&sem_full);
     }
@@ -135,7 +148,7 @@ class Semaphore {
       consumer_idx = (consumer_idx + 1) % BUFFER_LEN;
       std::cout << *this;
       cont[consumer_idx] = Slot::EMPTY;
-      std::this_thread::sleep_for(std::chrono::seconds(1));
+      std::this_thread::sleep_for(wait);
       rk_sema_post(&sem_lock);
       rk_sema_post(&sem_empty);
     }
@@ -149,7 +162,7 @@ bool Semaphore<BUFFER_LEN>::running{true};
 
 namespace Binary {
 template <std::size_t LEN>
-class Semaphore {
+class Semaphore : public virtual Task {
   std::thread thread_even, thread_odd;
   Posix::sem sem_even, sem_odd;
   std::size_t counter;
@@ -166,6 +179,9 @@ class Semaphore {
     if (rk_sema_init(&sem_even, p_shared, 0) != 0) {
       std::cerr << "Error init semaphore for even lock" << std::endl;
     }
+  }
+
+  void run() {
     auto print_number = [this](bool const is_odd) -> void {
       std::string msg = is_odd ? "[thread1] Odd" : "[thread2] Even";
       do {
@@ -189,7 +205,7 @@ class Semaphore {
     if (rk_sema_destroy(&sem_even) != 0) {
       std::cerr << "Error destroying Semaphore even lock" << std::endl;
     }
-    std::cout << "Producer Consumer done!" << std::endl;
+    std::cout << "Odd Even done!" << std::endl;
   }
 };
 }  // namespace Binary
