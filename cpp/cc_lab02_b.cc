@@ -15,43 +15,44 @@ using Iter = std::ostream_iterator<int>;
 
 template <std::size_t N, std::size_t M>
 class Matrix {
- private:
   std::array<int, N * M> arr;
-  std::size_t n;
-  std::size_t m;
 
  public:
-  Matrix() : n{N}, m{M} {
-    assert(n > 0);
-    assert(m > 0);
-    for (int i = 0; i < n; ++i) {
-      std::iota(arr.begin() + (m * i), arr.begin() + ((m * i) + m), 1);
+  Matrix() {
+    assert(N > 0);
+    assert(M > 0);
+    for (int i = 0; i < N; ++i) {
+      std::iota(arr.begin() + (M * i), arr.begin() + ((M * i) + M), 1);
     }
   }
 
-  Matrix(const int val) : n{N}, m{M} {
-    assert(n > 0);
-    assert(m > 0);
+  explicit Matrix(const int val) {
+    assert(N > 0);
+    assert(M > 0);
     arr.fill(val);
   }
+  Matrix(const Matrix &) = delete;
+  Matrix &operator=(const Matrix &) = delete;
+  Matrix(Matrix &&) = delete;
+  Matrix &operator=(Matrix &&) = delete;
 
   constexpr int const &operator()(const std::size_t x,
                                   const std::size_t y) const {
-    return arr.at(x * m + y);
+    return arr.at(x * M + y);
   }
 
   constexpr int &operator()(const std::size_t x, const std::size_t y) {
-    return arr.at(x * m + y);
+    return arr.at(x * M + y);
   }
 
-  constexpr std::size_t const rows() const { return n; }
+  constexpr std::size_t rows() const noexcept { return N; }
 
-  constexpr std::size_t const cols() const { return m; }
+  constexpr std::size_t cols() const noexcept { return M; }
 
   friend std::ostream &operator<<(std::ostream &os, const Matrix<N, M> &m) {
-    for (int i = 0; i < m.rows(); ++i) {
-      std::copy(m.arr.begin() + (m.cols() * i),
-                m.arr.begin() + ((m.cols() * i) + m.cols()), Iter(os, " "));
+    for (auto i{0}; i < m.rows(); ++i) {
+      std::copy(m.arr.cbegin() + (m.cols() * i),
+                m.arr.cbegin() + ((m.cols() * i) + m.cols()), Iter(os, " "));
       os << std::endl;
     }
     return os;
@@ -67,9 +68,9 @@ int main() {
     threads.reserve(rows);
     using LockFreeMatrix = Custom::Matrix<rows, cols>;
 
-    LockFreeMatrix a;
-    LockFreeMatrix b(2000);
-    LockFreeMatrix res(0);
+    LockFreeMatrix a{};
+    LockFreeMatrix b{2000};
+    LockFreeMatrix res{0};
     {
       assert(a.cols() == b.cols() && a.rows() == b.rows());
       assert(a.cols() == res.cols() && a.rows() == res.rows());
@@ -78,9 +79,9 @@ int main() {
     std::cout << a;
     std::cout << "B: " << std::endl;
     std::cout << b;
-    for (std::size_t row{0}; row < rows; ++row) {
+    for (auto row{0}; row < rows; ++row) {
       threads.emplace_back([&, columns = cols, current_row = row] {
-        for (std::size_t col{0}; col < columns; ++col) {
+        for (auto col{0}; col < columns; ++col) {
           res(current_row, col) += a(current_row, col) + b(current_row, col);
         }
       });

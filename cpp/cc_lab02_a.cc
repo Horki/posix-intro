@@ -8,7 +8,10 @@ class Data {
 
  public:
   Data() : a{10}, b{10}, c{10}, total{0} {}
-  Data(uint64_t a, uint64_t b, uint64_t c) : a{a}, b{b}, c{c}, total{0} {}
+  Data(const Data&) = delete;
+  Data& operator=(const Data&) = delete;
+  Data(Data&&) = delete;
+  Data& operator=(Data&&) = delete;
   // Expensive operation O(n^3)
   void calculate() {
     for (size_t i{1}; i <= a; ++i) {
@@ -19,7 +22,7 @@ class Data {
       }
     }
   }
-  constexpr uint64_t get_total() const { return total; }
+  constexpr uint64_t get_total() const noexcept { return total; }
 };
 
 int main() {
