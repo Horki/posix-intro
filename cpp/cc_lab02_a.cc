@@ -1,3 +1,4 @@
+#include <atomic>
 #include <cassert>  // assert
 #include <iostream>
 #include <thread>  // thread
@@ -5,6 +6,7 @@
 class Data {
  private:
   uint64_t a, b, c, total;
+  std::atomic<bool> is_cached{false};
 
  public:
   Data() : a{10}, b{10}, c{10}, total{0} {}
@@ -12,6 +14,16 @@ class Data {
   Data& operator=(const Data&) = delete;
   Data(Data&&) = delete;
   Data& operator=(Data&&) = delete;
+
+  constexpr uint64_t get_total() noexcept {
+    if (!is_cached) {
+      calculate();
+      is_cached = true;
+    }
+    return total;
+  }
+
+ private:
   // Expensive operation O(n^3)
   void calculate() {
     for (size_t i{1}; i <= a; ++i) {
@@ -22,14 +34,15 @@ class Data {
       }
     }
   }
-  constexpr uint64_t get_total() const noexcept { return total; }
 };
 
 int main() {
   std::cout << "[main] Calculate in separate thread" << std::endl;
   {
     Data d;
-    std::thread t([&d] { d.calculate(); });
+    std::thread t([&d] {
+      std::cout << "[thread] result is: " << d.get_total() << std::endl;
+    });
     std::cout << "[separate] Waiting thread to finish" << std::endl;
     t.join();
     std::cout << "[separate] Result = " << d.get_total() << std::endl;
