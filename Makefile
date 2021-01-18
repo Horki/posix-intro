@@ -80,6 +80,9 @@ shared_object.txt:
 bin/cpp/cc_lab01: cpp/cc_lab01.cc cpp/include/custom_exception.hh
 	$(CPP) $(CPP_FLAGS) -Icpp/include -o $@ $<
 
+bin/cpp/cc_lab02_b: cpp/cc_lab02_b.cc
+	$(CPP) $(CPP_FLAGS) -o $@ $< -pthread
+
 bin/cpp/cc_lab05_a: cpp/cc_lab05_a.cc cpp/include/buffer.hh c/include/posix_semaphore.h
 	$(CPP) $(CPP_FLAGS) -Ic/include -Icpp/include -o $@ $< -pthread
 
