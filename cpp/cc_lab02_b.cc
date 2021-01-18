@@ -41,16 +41,32 @@ class Matrix {
 
   constexpr int const &operator()(const std::size_t x,
                                   const std::size_t y) const {
+    if (x >= N || y >= M) {
+      throw std::out_of_range{"const () out of range"};
+    }
     return arr[x * M + y];
   }
 
   constexpr int &operator()(const std::size_t x, const std::size_t y) {
+    if (x >= N || y >= M) {
+      throw std::out_of_range{"() out of range"};
+    }
     return arr[x * M + y];
   }
 
-  decltype(auto) row(std::size_t n) { return arr[std::slice(n * M, M, 1)]; }
+  decltype(auto) row(std::size_t n) {
+    if (n >= N) {
+      throw std::out_of_range{"row out of range"};
+    }
+    return arr[std::slice(n * M, M, 1)];
+  }
 
-  decltype(auto) col(std::size_t n) { return arr[std::slice(n, N, M)]; }
+  decltype(auto) col(std::size_t n) {
+    if (n >= M) {
+      throw std::out_of_range{"col out of range"};
+    }
+    return arr[std::slice(n, N, M)];
+  }
 
   constexpr std::size_t rows() const noexcept { return N; }
 
