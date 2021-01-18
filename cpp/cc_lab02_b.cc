@@ -1,58 +1,66 @@
 #include <algorithm>  // copy
-#include <array>      // array
 #include <cassert>    // assert
+#include <future>     // async, future
 #include <iostream>   // cout
 #include <iterator>   // ostream_iterator
 #include <numeric>    // iota
 #include <stdexcept>  // out_of_range
-#include <thread>     // thread
+#include <valarray>   // valarray, slice
 #include <vector>     // vector
-
-#include "common.hh"  // wait_threads
 
 namespace Custom {
 using Iter = std::ostream_iterator<int>;
 
 template <std::size_t N, std::size_t M>
 class Matrix {
-  std::array<int, N * M> arr;
+  std::valarray<int> arr;
 
  public:
-  Matrix() {
+  Matrix() : arr(0, N * M) {
     assert(N > 0);
     assert(M > 0);
-    for (int i = 0; i < N; ++i) {
-      std::iota(arr.begin() + (M * i), arr.begin() + ((M * i) + M), 1);
+    std::valarray<int> v(M);
+    std::iota(std::begin(v), std::end(v), 1);
+    for (std::size_t i{0}; i < N; ++i) {
+      row(i) += v;
     }
   }
 
-  explicit Matrix(const int val) {
+  explicit Matrix(const int val) : arr(val, N * M) {
     assert(N > 0);
     assert(M > 0);
-    arr.fill(val);
   }
+
   Matrix(const Matrix &) = delete;
+
   Matrix &operator=(const Matrix &) = delete;
+
   Matrix(Matrix &&) = delete;
+
   Matrix &operator=(Matrix &&) = delete;
 
   constexpr int const &operator()(const std::size_t x,
                                   const std::size_t y) const {
-    return arr.at(x * M + y);
+    return arr[x * M + y];
   }
 
   constexpr int &operator()(const std::size_t x, const std::size_t y) {
-    return arr.at(x * M + y);
+    return arr[x * M + y];
   }
+
+  decltype(auto) row(std::size_t n) { return arr[std::slice(n * M, M, 1)]; }
+
+  decltype(auto) col(std::size_t n) { return arr[std::slice(n, N, M)]; }
 
   constexpr std::size_t rows() const noexcept { return N; }
 
   constexpr std::size_t cols() const noexcept { return M; }
 
   friend std::ostream &operator<<(std::ostream &os, const Matrix<N, M> &m) {
-    for (auto i{0}; i < m.rows(); ++i) {
-      std::copy(m.arr.cbegin() + (m.cols() * i),
-                m.arr.cbegin() + ((m.cols() * i) + m.cols()), Iter(os, " "));
+    for (std::size_t i{0}; i < m.rows(); ++i) {
+      std::copy(std::cbegin(m.arr) + (m.cols() * i),
+                std::cbegin(m.arr) + ((m.cols() * i) + m.cols()),
+                Iter(os, " "));
       os << std::endl;
     }
     return os;
@@ -64,8 +72,8 @@ int main() {
   try {
     constexpr std::size_t rows{15};
     constexpr std::size_t cols{15};
-    std::vector<std::thread> threads;
-    threads.reserve(rows);
+    std::vector<std::future<void>> futures;
+    futures.reserve(rows);
     using LockFreeMatrix = Custom::Matrix<rows, cols>;
 
     LockFreeMatrix a{};
@@ -79,15 +87,16 @@ int main() {
     std::cout << a;
     std::cout << "B: " << std::endl;
     std::cout << b;
-    for (auto row{0}; row < rows; ++row) {
-      threads.emplace_back([&, columns = cols, current_row = row] {
-        for (auto col{0}; col < columns; ++col) {
-          res(current_row, col) += a(current_row, col) + b(current_row, col);
-        }
-      });
+    for (std::size_t c{0}; c < cols; ++c) {
+      futures.push_back(std::async([&, current_col = c] {
+        res.col(current_col) += a.col(current_col);
+        res.col(current_col) += b.col(current_col);
+      }));
     }
-    std::cout << "wait for join threads" << std::endl;
-    wait_threads(threads);
+    std::cout << "wait for promises" << std::endl;
+    for (auto &f : futures) {
+      f.get();
+    }
 
     std::cout << "result: " << std::endl;
     std::cout << res;
