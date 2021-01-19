@@ -16,13 +16,13 @@ class Matrix {
   std::valarray<int> arr;
 
  public:
-  Matrix() : arr(0, N * M) {
+  Matrix() : arr(N * M) {
     assert(N > 0);
     assert(M > 0);
     std::valarray<int> v(M);
     std::iota(std::begin(v), std::end(v), 1);
     for (std::size_t i{0}; i < N; ++i) {
-      row(i) += v;
+      row(i) = v;
     }
   }
 
@@ -61,9 +61,23 @@ class Matrix {
     return arr[std::slice(n * M, M, 1)];
   }
 
+  decltype(auto) row(std::size_t n) const {
+    if (n >= N) {
+      throw std::out_of_range{"const row out of range"};
+    }
+    return arr[std::slice(n * M, M, 1)];
+  }
+
   decltype(auto) col(std::size_t n) {
     if (n >= M) {
       throw std::out_of_range{"col out of range"};
+    }
+    return arr[std::slice(n, N, M)];
+  }
+
+  decltype(auto) col(std::size_t n) const {
+    if (n >= M) {
+      throw std::out_of_range{"const col out of range"};
     }
     return arr[std::slice(n, N, M)];
   }
@@ -74,9 +88,7 @@ class Matrix {
 
   friend std::ostream &operator<<(std::ostream &os, const Matrix<N, M> &m) {
     for (std::size_t i{0}; i < m.rows(); ++i) {
-      std::copy(std::cbegin(m.arr) + (m.cols() * i),
-                std::cbegin(m.arr) + ((m.cols() * i) + m.cols()),
-                Iter(os, " "));
+      std::copy(&m(i, 0), &m(i, 0) + m.cols(), Iter(os, " "));
       os << std::endl;
     }
     return os;
@@ -92,8 +104,8 @@ int main() {
     futures.reserve(rows);
     using LockFreeMatrix = Custom::Matrix<rows, cols>;
 
-    LockFreeMatrix a{};
-    LockFreeMatrix b{2000};
+    const LockFreeMatrix a{};
+    const LockFreeMatrix b{2000};
     LockFreeMatrix res{0};
     {
       assert(a.cols() == b.cols() && a.rows() == b.rows());
