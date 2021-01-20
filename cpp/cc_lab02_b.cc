@@ -116,7 +116,7 @@ int main() {
     std::cout << "B: " << std::endl;
     std::cout << b;
     for (std::size_t c{0}; c < cols; ++c) {
-      futures.push_back(std::async([&, current_col = c] {
+      futures.push_back(std::async([&, current_col = c]() -> void {
         res.col(current_col) += a.col(current_col);
         res.col(current_col) += b.col(current_col);
       }));

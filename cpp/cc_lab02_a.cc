@@ -15,7 +15,7 @@ class Data {
   Data(Data&&) = delete;
   Data& operator=(Data&&) = delete;
 
-  constexpr uint64_t get_total() noexcept {
+  uint64_t get_total() noexcept {
     if (!is_cached) {
       calculate();
       is_cached = true;
@@ -25,7 +25,7 @@ class Data {
 
  private:
   // Expensive operation O(n^3)
-  void calculate() {
+  void calculate() noexcept {
     for (size_t i{1}; i <= a; ++i) {
       for (size_t j{1}; j <= b; ++j) {
         for (size_t k{1}; k <= c; ++k) {
