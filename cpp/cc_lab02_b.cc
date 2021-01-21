@@ -100,12 +100,18 @@ int main() {
   try {
     constexpr std::size_t rows{15};
     constexpr std::size_t cols{15};
+    using LockFreeMatrix = Custom::Matrix<rows, cols>;
+    auto fn_task = [](LockFreeMatrix &res, const LockFreeMatrix &a,
+                      const LockFreeMatrix &b, const std::size_t n) -> void {
+      res.col(n) += a.col(n);
+      res.col(n) += b.col(n);
+    };
+
     std::vector<std::future<void>> futures;
     futures.reserve(rows);
-    using LockFreeMatrix = Custom::Matrix<rows, cols>;
 
-    const LockFreeMatrix a{};
-    const LockFreeMatrix b{2000};
+    LockFreeMatrix a{};
+    LockFreeMatrix b{2000};
     LockFreeMatrix res{0};
     {
       assert(a.cols() == b.cols() && a.rows() == b.rows());
@@ -116,10 +122,9 @@ int main() {
     std::cout << "B: " << std::endl;
     std::cout << b;
     for (std::size_t c{0}; c < cols; ++c) {
-      futures.push_back(std::async([&, current_col = c]() -> void {
-        res.col(current_col) += a.col(current_col);
-        res.col(current_col) += b.col(current_col);
-      }));
+      // TODO: investigate!
+      futures.push_back(
+          std::async(fn_task, std::ref(res), std::cref(a), std::cref(b), c));
     }
     std::cout << "wait for promises" << std::endl;
     for (auto &f : futures) {
