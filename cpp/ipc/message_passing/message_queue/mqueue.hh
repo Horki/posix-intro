@@ -12,7 +12,7 @@ namespace MessageQueue {
 class Task {
  public:
   virtual void run() const = 0;
-  virtual ~Task() {}
+  virtual ~Task() = default;
 };
 
 class Queue {
@@ -30,6 +30,10 @@ class Queue {
 
  public:
   Queue() : queue_id{create_queue()}, msg{} {}
+  Queue(const Queue&) = delete;
+  Queue& operator=(const Queue&) = delete;
+  Queue(Queue&&) = delete;
+  Queue& operator=(Queue&&) = delete;
 
  protected:
   bool terminate() const { return strncmp(msg.text, "0", 1) == 0; }

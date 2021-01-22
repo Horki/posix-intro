@@ -51,12 +51,12 @@ class Accept : public Exc {
 class Task {
  public:
   virtual void run() const = 0;
-  virtual ~Task() {}
+  virtual ~Task() = default;
 };
 
 struct Common {
   static constexpr std::streamsize buffer{20};
-  static constexpr const char *host = "localhost";
+  static constexpr const char *const host{"localhost"};
   static constexpr u_int16_t port_number{8080};
 
   // Create Kernel-Level socket buffer
@@ -90,6 +90,11 @@ class Client : public virtual Task {
         msg{},
         received{} {}
   ~Client() { close(client_fd); }
+  Client(const Client &) = delete;
+  Client &operator=(const Client &) = delete;
+  Client(Client &&) = delete;
+  Client &operator=(Client &&) = delete;
+
   void run() const {
     connect_to_server();
     do {
@@ -158,6 +163,11 @@ class Server : public virtual Task {
       throw Exception::Accept{};
     }
   }
+  Server(const Server &) = delete;
+  Server &operator=(const Server &) = delete;
+  Server(Server &&) = delete;
+  Server &operator=(Server &&) = delete;
+
   ~Server() {
     std::cout << "Closing client connection! " << client_fd << std::endl;
     close(server_fd);

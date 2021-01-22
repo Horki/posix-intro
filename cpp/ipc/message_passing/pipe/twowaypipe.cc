@@ -18,6 +18,10 @@ class Pipe {
       throw std::bad_exception{};
     }
   }
+  Pipe(const Pipe&) = delete;
+  Pipe& operator=(const Pipe&) = delete;
+  Pipe(Pipe&&) = delete;
+  Pipe& operator=(Pipe&&) = delete;
   ~Pipe() {
     close(pipe1[0]);
     close(pipe1[1]);
@@ -87,7 +91,7 @@ int main() {
   try {
     Pipe p;
     p.run();
-  } catch (const std::bad_exception &e) {
+  } catch (const std::bad_exception& e) {
     std::cerr << "Exception: " << e.what() << std::endl;
   } catch (...) {
     std::cerr << "other exception" << std::endl;

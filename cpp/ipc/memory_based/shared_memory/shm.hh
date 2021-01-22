@@ -14,7 +14,7 @@
 
 namespace SharedMemory {
 // TODO: check about exception policy!!!
-using SemPtr = std::unique_ptr<sem_t, decltype(&sem_close)>;
+using SemPtr = std::unique_ptr<sem_t, int (*)(sem_t *) noexcept>;
 
 namespace Exception {
 class Exc {
@@ -34,8 +34,8 @@ class FileDescriptor : public Exc {
 }  // namespace Exception
 struct Common {
   static constexpr std::streamsize buff{255};
-  static constexpr const char *sem_one_name = "one";
-  static constexpr const char *sem_two_name = "two";
+  static constexpr const char *const sem_one_name{"one"};
+  static constexpr const char *const sem_two_name{"two"};
   static int open_file(const char *path, const bool write = true) {
     std::cout << "Opening file '" << path << "' with read"
               << (write ? "+write" : "") << " perms" << std::endl;
@@ -59,7 +59,7 @@ struct Common {
 class Task {
  public:
   virtual void run() = 0;
-  virtual ~Task() {}
+  virtual ~Task() = default;
 };
 
 class Write : public virtual Task {

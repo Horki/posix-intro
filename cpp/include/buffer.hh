@@ -16,6 +16,10 @@ namespace Custom {
 class Task {
  public:
   virtual void run() = 0;
+  //  Task(const Task &) = delete;
+  //  Task &operator=(const Task &) = delete;
+  //  Task(Task &&) = delete;
+  //  Task &operator=(Task &&) = delete;
   virtual ~Task() {}
 };
 
@@ -59,8 +63,7 @@ class Semaphore : public virtual Task {
   static bool running;
 
  public:
-  Semaphore(std::size_t const n_producers,
-                     std::size_t const n_consumers)
+  Semaphore(std::size_t const n_producers, std::size_t const n_consumers)
       : n_producers{n_producers},
         n_consumers{n_consumers},
         producer_idx{0},

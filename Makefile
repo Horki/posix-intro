@@ -4,10 +4,10 @@ ifeq ($(UNAME), Darwin)
 endif
 
 CC=clang
-C_FLAGS=-std=gnu11 -Wall -Werror -g
+C_FLAGS=-std=gnu17 -Wall -Werror -Wpedantic -g
 
 CPP=clang++
-CPP_FLAGS=-std=c++17 -Wall -Werror -O3
+CPP_FLAGS=-std=c++17 -Wall -Werror -Wpedantic -O3 -stdlib=libstdc++
 
 RUSTC=rustc
 RUSTC_FLAGS=-g --deny warnings

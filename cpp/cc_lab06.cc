@@ -14,13 +14,18 @@ class Semaphore {
   uint16_t no;
 
  public:
-  Semaphore(std::uint16_t no) : no(no) {
+  explicit Semaphore(std::uint16_t no) : no(no) {
     threads.reserve(no);
     // Init semaphore
     int r = rk_sema_init(&sem_bin, 0, 1);
     assert(r == 0);
-    add_airplanes();
   }
+  Semaphore(const Semaphore&) = delete;
+  Semaphore& operator=(const Semaphore&) = delete;
+  Semaphore(Semaphore&&) = delete;
+  Semaphore&& operator=(Semaphore&&) = delete;
+
+  void run() { add_airplanes(); }
 
   ~Semaphore() {
     wait_threads(threads);
@@ -50,6 +55,9 @@ class Semaphore {
 };
 
 int main() {
-  { Semaphore semaphore(5); }
+  {
+    Semaphore semaphore(5);
+    semaphore.run();
+  }
   std::cout << "main done" << std::endl;
 }
