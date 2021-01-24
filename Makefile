@@ -7,8 +7,7 @@ CC=clang
 C_FLAGS=-std=gnu17 -Wall -Werror -Wpedantic -g
 
 CPP=clang++
-CPP_FLAGS=-std=c++17 -Wall -Werror -Wpedantic -O3 -stdlib=libstdc++
-
+CPP_FLAGS=-std=c++17 -Wall -Werror -Wpedantic -O3 
 RUSTC=rustc
 RUSTC_FLAGS=-g --deny warnings
 

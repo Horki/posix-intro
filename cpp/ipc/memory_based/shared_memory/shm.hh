@@ -14,7 +14,7 @@
 
 namespace SharedMemory {
 // TODO: check about exception policy!!!
-using SemPtr = std::unique_ptr<sem_t, int (*)(sem_t *) noexcept>;
+using SemPtr = std::unique_ptr<sem_t, decltype(&sem_close)>;
 
 namespace Exception {
 class Exc {
